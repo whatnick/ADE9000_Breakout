@@ -1,0 +1,29 @@
+{
+    "servers": {
+        "kicad": {
+            "type": "stdio",
+            "command": "node",
+            "args": ["C:/Users/tisha/dev/KiCAD-MCP-Server/dist/index.js"],
+            "env": {
+                "PYTHONPATH": "C:/Program Files/KiCad/10.0/bin/Lib/site-packages;C:/Users/tisha/OneDrive/Documents/KiCad/10.0/3rdparty/Python311/site-packages",
+                "KICAD_PYTHON": "C:/Program Files/KiCad/10.0/bin/python.exe"
+            }
+        },
+        "kicad-pro": {
+					"type": "stdio",
+					"command": "uvx",
+					"args": [
+						"kicad-mcp-pro",
+                        "serve"
+					],
+					"env": {
+						"KICAD_MCP_PROJECT_DIR": "C:/Users/tisha/dev/ADE9000_Breakout",
+						"KICAD_MCP_WORKSPACE_ROOT": "C:/Users/tisha/dev"
+					}
+				},
+        "pcbparts": {
+            "type": "http",
+            "url": "https://pcbparts.dev/mcp"
+        }
+    }
+}

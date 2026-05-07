@@ -1,0 +1,56 @@
+# KiCad auto-save and backup files
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_pro-bak
+*-bak/
+*_autosave-*
+\#auto_saved_files\#
+
+# KiCad lock files
+*.lck
+
+# KiCad local settings (machine-specific)
+*.kicad_prl
+
+# KiCad project-level cache
+fp-info-cache
+sym-lib-table
+fp-lib-table
+
+# Fabrication outputs (generated, not source)
+gerbers/
+fab/
+*.gbr
+*.drl
+*.dxf
+*.pos
+*.csv
+*.xml
+
+# Export outputs
+*.pdf
+*.svg
+*.png
+*.step
+*.wrl
+*.3dshapes/
+
+# Allow docs to override the above
+!docs/**/*.pdf
+!docs/**/*.png
+!docs/**/*.svg
+
+# Python cache (for KiCad scripting)
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
+.vscode/settings.json
+.history/
+*-backups/
