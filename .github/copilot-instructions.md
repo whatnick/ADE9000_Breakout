@@ -21,7 +21,13 @@ KiCad MCP notes:
 - KiCad CLI ERC command:
   `& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" sch erc --format json --output "c:\Users\tisha\dev\ADE9000_Breakout\erc.json" "c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_sch"`
 
+Verified PCB routing rules:
+- The compact QFN breakout routes cleanly with 0.15 mm tracks, 0.15 mm clearance, 0.45 mm vias, and 0.20 mm via drills.
+- Keep the project `.kicad_pro` DRC rules aligned with the board routing rules; KiCad CLI validates the main board using project constraints, while temporary renamed boards can appear clean with only board-local settings.
+- A fully routed board should report 0 unconnected items and 0 non-library DRC violations; the remaining `lib_footprint_mismatch` warnings are expected unless footprints are refreshed from libraries.
+
 Known outcome from debugging this design:
 - The rewired schematic reaches zero ERC errors.
+- The PCB routes to zero unconnected items with bottom-side digital/control test pads preserved.
 - Remaining ERC warnings are dominated by `endpoint_off_grid` from symbol placement and inherited wire endpoints.
 - If reducing warnings, fix placement/grid alignment first instead of reverting to label-only connectivity.
