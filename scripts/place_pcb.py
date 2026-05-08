@@ -151,30 +151,53 @@ def add_u1_if_missing(board: pcbnew.BOARD) -> None:
     board.Add(fp)
 
 
+# Corner radius for the board outline (replaces the old 45-degree chamfer segments).
+CORNER_RADIUS = 5.08
+# Inset from each straight board edge for M2 mounting hole centres.
+MH_INSET = 3.5
+# Mounting hole library.
+MH_LIB = r"C:\Program Files\KiCad\10.0\share\kicad\footprints\MountingHole.pretty"
+MH_NAME = "MountingHole_2.2mm_M2"
+
+
 def draw_outline(board: pcbnew.BOARD) -> None:
+    """Replace any existing Edge.Cuts with a single rounded-rectangle."""
     for drawing in list(board.GetDrawings()):
         if drawing.GetLayer() == pcbnew.Edge_Cuts:
             board.Remove(drawing)
 
-    corner = 5.08
-    points = [
-        (BOARD_LEFT + corner, BOARD_TOP),
-        (BOARD_RIGHT - corner, BOARD_TOP),
-        (BOARD_RIGHT, BOARD_TOP + corner),
-        (BOARD_RIGHT, BOARD_BOTTOM - corner),
-        (BOARD_RIGHT - corner, BOARD_BOTTOM),
-        (BOARD_LEFT + corner, BOARD_BOTTOM),
-        (BOARD_LEFT, BOARD_BOTTOM - corner),
-        (BOARD_LEFT, BOARD_TOP + corner),
+    shape = pcbnew.PCB_SHAPE(board)
+    shape.SetShape(pcbnew.SHAPE_T_RECTANGLE)
+    shape.SetStart(vmm(BOARD_LEFT, BOARD_TOP))
+    shape.SetEnd(vmm(BOARD_RIGHT, BOARD_BOTTOM))
+    shape.SetCornerRadius(pcbnew.FromMM(CORNER_RADIUS))
+    shape.SetLayer(pcbnew.Edge_Cuts)
+    shape.SetWidth(pcbnew.FromMM(0.1))
+    board.Add(shape)
+
+
+def add_mounting_holes(board: pcbnew.BOARD) -> None:
+    """Add four M2 NPTH mounting holes inset from each board corner."""
+    # Remove existing mounting hole footprints so the function is idempotent.
+    for ref in ("H1", "H2", "H3", "H4"):
+        existing = board.FindFootprintByReference(ref)
+        if existing:
+            board.Remove(existing)
+
+    corners = [
+        ("H1", BOARD_LEFT  + MH_INSET, BOARD_TOP    + MH_INSET),
+        ("H2", BOARD_RIGHT - MH_INSET, BOARD_TOP    + MH_INSET),
+        ("H3", BOARD_RIGHT - MH_INSET, BOARD_BOTTOM - MH_INSET),
+        ("H4", BOARD_LEFT  + MH_INSET, BOARD_BOTTOM - MH_INSET),
     ]
-    for start, end in zip(points, points[1:] + points[:1]):
-        shape = pcbnew.PCB_SHAPE(board)
-        shape.SetShape(pcbnew.SHAPE_T_SEGMENT)
-        shape.SetStart(vmm(*start))
-        shape.SetEnd(vmm(*end))
-        shape.SetLayer(pcbnew.Edge_Cuts)
-        shape.SetWidth(pcbnew.FromMM(0.1))
-        board.Add(shape)
+    for ref, x, y in corners:
+        fp = pcbnew.FootprintLoad(MH_LIB, MH_NAME)
+        if fp is None:
+            raise RuntimeError(f"Could not load {MH_LIB}/{MH_NAME}.kicad_mod")
+        fp.SetReference(ref)
+        fp.SetValue("M2")
+        fp.SetPosition(vmm(x, y))
+        board.Add(fp)
 
 
 def place_all(board: pcbnew.BOARD) -> None:
@@ -273,13 +296,14 @@ def place_all(board: pcbnew.BOARD) -> None:
         place_ref(board, ref, x, y + 1.650, 0)
 
     draw_outline(board)
+    add_mounting_holes(board)
 
 
 def main() -> None:
     board = pcbnew.LoadBoard(str(BOARD_PATH))
     place_all(board)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
-    print(f"Placed ADE9000 breakout PCB in {BOARD_WIDTH:.2f} mm x {BOARD_HEIGHT:.2f} mm outline")
+    print(f"Placed ADE9000 breakout PCB: {BOARD_WIDTH:.2f} mm x {BOARD_HEIGHT:.2f} mm, rounded corners r={CORNER_RADIUS} mm, 4x M2 mounting holes")
 
 
 if __name__ == "__main__":

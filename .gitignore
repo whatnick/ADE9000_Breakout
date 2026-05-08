@@ -52,7 +52,7 @@ Thumbs.db
 *.swp
 *~
 .vscode/settings.json
-.history/
 *-backups/
 *.dsn
+.history/
 *.ses
