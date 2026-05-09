@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-05-09T21:43:51",
+    "date": "2026-05-09T23:07:12",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -54,8 +54,8 @@
                 {
                     "description": "Footprint C3",
                     "pos": {
-                        "x": 139.4,
-                        "y": 106.4
+                        "x": 141.6,
+                        "y": 104.5
                     },
                     "uuid": "0d6416ea-a1e4-4063-903e-6a350994aa5d"
                 }
@@ -118,6 +118,21 @@
                         "y": 101.6
                     },
                     "uuid": "2e7f9f71-2d2d-4382-b9c3-3a38791b9945"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint H4",
+                    "pos": {
+                        "x": 155.8,
+                        "y": 118.61
+                    },
+                    "uuid": "33d18a7a-59a9-4cb2-8a9b-b4aa272eb6e5"
                 }
             ],
             "severity": "warning",
@@ -259,6 +274,21 @@
             "type": "lib_footprint_mismatch"
         },
         {
+            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint H1",
+                    "pos": {
+                        "x": 124.235,
+                        "y": 85.0
+                    },
+                    "uuid": "6fa110d9-aab0-4941-956a-9de6ce31b2ae"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
             "description": "Footprint 'C_0402_1005Metric' does not match copy in library 'Capacitor_SMD'",
             "items": [
                 {
@@ -309,25 +339,10 @@
                 {
                     "description": "Footprint C4",
                     "pos": {
-                        "x": 142.0,
-                        "y": 106.4
+                        "x": 143.2,
+                        "y": 104.5
                     },
                     "uuid": "842afafe-3fb7-41a7-ab85-dbb82bfaf569"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
-            "items": [
-                {
-                    "description": "Footprint H4",
-                    "pos": {
-                        "x": 155.8,
-                        "y": 118.61
-                    },
-                    "uuid": "8642b511-33db-4c76-aea2-cd39565e74fe"
                 }
             ],
             "severity": "warning",
@@ -343,6 +358,21 @@
                         "y": 103.2
                     },
                     "uuid": "8a505280-2adc-4914-b04c-adef514e9b48"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint H2",
+                    "pos": {
+                        "x": 155.535,
+                        "y": 85.0
+                    },
+                    "uuid": "8bc13bee-8db1-441a-b107-4036a7fe8a3f"
                 }
             ],
             "severity": "warning",
@@ -367,12 +397,12 @@
             "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
             "items": [
                 {
-                    "description": "Footprint H2",
+                    "description": "Footprint H3",
                     "pos": {
-                        "x": 155.535,
-                        "y": 85.0
+                        "x": 124.235,
+                        "y": 118.71
                     },
-                    "uuid": "9408c68d-bed6-44bf-827e-c01682ddb1af"
+                    "uuid": "935d0cc3-3b2a-4a91-bebc-5a72bd23087f"
                 }
             ],
             "severity": "warning",
@@ -429,8 +459,8 @@
                 {
                     "description": "Footprint C6",
                     "pos": {
-                        "x": 138.6,
-                        "y": 84.7
+                        "x": 140.5,
+                        "y": 88.0
                     },
                     "uuid": "9d896804-0c97-4b9a-bb4a-f80fd971907b"
                 }
@@ -523,21 +553,6 @@
                         "y": 98.2
                     },
                     "uuid": "c7b5c422-4cd0-407f-af07-e9834984424c"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
-            "items": [
-                {
-                    "description": "Footprint H1",
-                    "pos": {
-                        "x": 124.235,
-                        "y": 85.0
-                    },
-                    "uuid": "c910683a-60b9-445c-9980-aaad5b1c7e6c"
                 }
             ],
             "severity": "warning",
@@ -669,8 +684,8 @@
                 {
                     "description": "Footprint C5",
                     "pos": {
-                        "x": 136.0,
-                        "y": 84.7
+                        "x": 137.0,
+                        "y": 88.0
                     },
                     "uuid": "eab53197-d3bb-4541-bbd0-9bfb6844ae05"
                 }
@@ -684,8 +699,8 @@
                 {
                     "description": "Footprint C8",
                     "pos": {
-                        "x": 152.6,
-                        "y": 84.7
+                        "x": 147.1,
+                        "y": 104.5
                     },
                     "uuid": "f28f202b-8309-49a9-8e37-53fb1e29e38b"
                 }
@@ -714,8 +729,8 @@
                 {
                     "description": "Footprint C7",
                     "pos": {
-                        "x": 150.0,
-                        "y": 84.7
+                        "x": 145.5,
+                        "y": 104.5
                     },
                     "uuid": "fa7df707-364e-41a7-a342-a877dc141e25"
                 }
@@ -733,21 +748,6 @@
                         "y": 87.9
                     },
                     "uuid": "fb974868-7438-4f9f-a734-5f8f0dd6da4f"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
-            "items": [
-                {
-                    "description": "Footprint H3",
-                    "pos": {
-                        "x": 124.235,
-                        "y": 118.71
-                    },
-                    "uuid": "fcc19c19-b836-4c38-be1b-ed994da1704b"
                 }
             ],
             "severity": "warning",
