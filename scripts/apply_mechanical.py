@@ -13,6 +13,7 @@ CORNER_RADIUS_MM = 5.08
 MOUNTING_HOLE_DRILL_MM = 2.2
 MOUNTING_HOLE_INSET_MM = 3.4
 EDGE_WIDTH_MM = 0.1
+ADE9000_BOARD_BBOX = (120.835, 82.423, 158.935, 120.423)
 
 def to_coord(x_mm: float, y_mm: float) -> pcbnew.VECTOR2I:
     return pcbnew.VECTOR2I(pcbnew.FromMM(x_mm), pcbnew.FromMM(y_mm))
@@ -157,7 +158,7 @@ def main() -> None:
     args = parser.parse_args()
 
     board = pcbnew.LoadBoard(str(args.board))
-    bbox = edge_cuts_bbox(board)
+    bbox = ADE9000_BOARD_BBOX
     edge_drawings = [
         drawing
         for drawing in list(board.GetDrawings())

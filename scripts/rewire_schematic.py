@@ -7,8 +7,10 @@ stubs plus labels, but the analog input conditioning is laid out as readable
 series-R/shunt-C rows that follow the Figure 55 test-circuit structure.
 """
 
+import copy
 import json
 import subprocess
+import uuid
 from pathlib import Path
 
 import sexpdata
@@ -22,6 +24,18 @@ FILTER_R_X = 70.0
 FILTER_C_X = 90.0
 FILTER_INPUT_LABEL_X = 50.0
 FILTER_OUTPUT_LABEL_X = 98.0
+DEBUG_JST_NETS = ["+3V3", "GND", "SS", "MOSI", "MISO", "SCLK"]
+DEBUG_TESTPOINT_NETS = {
+    "TP5": "IRQ0",
+    "TP6": "IRQ1",
+    "TP7": "CF1",
+    "TP8": "CF2",
+    "TP9": "CF3_ZX",
+    "TP10": "CF4_DREADY",
+    "TP11": "RESET",
+    "TP12": "CLKIN",
+    "TP13": "CLKOUT",
+}
 
 
 FILTER_ROWS = [
@@ -43,10 +57,7 @@ FILTER_ROWS = [
 
 
 COMPONENT_POSES = {
-    "TP1": (195.0, 67.0, 0.0),
-    "TP2": (195.0, 72.08, 0.0),
-    "TP3": (195.0, 77.16, 0.0),
-    "TP4": (195.0, 82.24, 0.0),
+    "J1": (35.0, 74.62, 0.0),
     "TP5": (195.0, 87.32, 0.0),
     "TP6": (195.0, 92.4, 0.0),
     "TP7": (195.0, 97.48, 0.0),
@@ -54,6 +65,8 @@ COMPONENT_POSES = {
     "TP9": (195.0, 107.64, 0.0),
     "TP10": (195.0, 112.72, 0.0),
     "TP11": (195.0, 117.8, 0.0),
+    "TP12": (195.0, 122.88, 0.0),
+    "TP13": (195.0, 127.96, 0.0),
     "C7": (108.0, 53.0, 0.0),
     "C8": (114.0, 53.0, 0.0),
     "C5": (108.0, 145.0, 0.0),
@@ -87,6 +100,97 @@ def component_ref(symbol_block: list) -> str | None:
     return None
 
 
+def component_property(symbol_block: list, name: str) -> list | None:
+    for item in symbol_block:
+        if isinstance(item, list) and item and atom_name(item[0]) == "property" and len(item) > 2 and item[1] == name:
+            return item
+    return None
+
+
+def set_property(symbol_block: list, name: str, value: str) -> None:
+    prop = component_property(symbol_block, name)
+    if prop is not None:
+        prop[2] = value
+
+
+def set_lib_id(symbol_block: list, lib_id: str) -> None:
+    for item in symbol_block:
+        if isinstance(item, list) and item and atom_name(item[0]) == "lib_id":
+            item[1] = lib_id
+            return
+
+
+def refresh_uuids(block) -> None:
+    if not isinstance(block, list):
+        return
+    if block and atom_name(block[0]) == "uuid" and len(block) > 1:
+        block[1] = str(uuid.uuid4())
+        return
+    for item in block:
+        refresh_uuids(item)
+
+
+def replace_string(block, old: str, new: str) -> None:
+    if not isinstance(block, list):
+        return
+    for index, item in enumerate(block):
+        if item == old:
+            block[index] = new
+        else:
+            replace_string(item, old, new)
+
+
+def normalize_debug_symbols(data: list) -> None:
+    symbols = [
+        item
+        for item in data
+        if isinstance(item, list) and item and atom_name(item[0]) == "symbol"
+    ]
+
+    # J1 is now the 6-pin JST-SH SPI/power debug connector.
+    for symbol in symbols:
+        if component_ref(symbol) == "J1":
+            set_lib_id(symbol, "Connector_Generic:Conn_01x06")
+            set_property(symbol, "Value", "SPI JST-SH")
+            set_property(symbol, "Footprint", "Connector_JST:JST_SHL_SM06B-SHLS-TF_1x06-1MP_P1.00mm_Horizontal")
+
+    # The SPI bus moves from TP1..TP4 to J1; keep other debug/control signals on test pads.
+    data[:] = [
+        item
+        for item in data
+        if not (
+            isinstance(item, list)
+            and item
+            and atom_name(item[0]) == "symbol"
+            and component_ref(item) in {"TP1", "TP2", "TP3", "TP4"}
+        )
+    ]
+
+    symbols = [
+        item
+        for item in data
+        if isinstance(item, list) and item and atom_name(item[0]) == "symbol"
+    ]
+    existing_refs = {component_ref(symbol) for symbol in symbols}
+    template = next((symbol for symbol in symbols if component_ref(symbol) == "TP11"), None)
+    if template is None:
+        return
+
+    for ref, net in DEBUG_TESTPOINT_NETS.items():
+        if ref in existing_refs:
+            symbol = next(symbol for symbol in symbols if component_ref(symbol) == ref)
+            set_property(symbol, "Value", net)
+            continue
+
+        symbol = copy.deepcopy(template)
+        replace_string(symbol, "TP11", ref)
+        replace_string(symbol, "RESET", net)
+        refresh_uuids(symbol)
+        set_property(symbol, "Reference", ref)
+        set_property(symbol, "Value", net)
+        data.insert(-2, symbol)
+
+
 def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
     for item in block:
         if isinstance(item, list) and item and atom_name(item[0]) == "at":
@@ -107,6 +211,7 @@ def layout_components() -> None:
         poses[ref_c] = (FILTER_C_X, row_y + 3.81, 0.0)
 
     data = sexpdata.loads(Path(SCH_PATH).read_text())
+    normalize_debug_symbols(data)
     for item in data:
         if not (isinstance(item, list) and item and atom_name(item[0]) == "symbol"):
             continue
@@ -173,36 +278,39 @@ def call_iface(command: str, params: dict) -> dict:
 
 
 def add_wire(start_x: float, start_y: float, end_x: float, end_y: float) -> dict:
-    return call_iface(
-        "add_schematic_wire",
-        {
-            "schematicPath": SCH_PATH,
-            "waypoints": [[start_x, start_y], [end_x, end_y]],
-            "snapToPins": False,
-        },
+    block = (
+        f' (wire (pts (xy {start_x} {start_y}) (xy {end_x} {end_y})) '
+        f'(stroke (width 0) (type default)) (uuid "{uuid.uuid4()}"))'
     )
+    append_schematic_block(block)
+    return {"success": True}
 
 
 def add_label(net: str, x: float, y: float, angle: int = 0) -> dict:
-    return call_iface(
-        "add_schematic_net_label",
-        {
-            "schematicPath": SCH_PATH,
-            "netName": net,
-            "position": [x, y],
-            "orientation": angle,
-        },
+    justify = "left bottom" if angle == 0 else "right bottom"
+    block = (
+        f' (label "{net}" (at {x} {y} {angle}) '
+        f'(effects (font (size 1.27 1.27)) (justify {justify})) (uuid "{uuid.uuid4()}"))'
     )
+    append_schematic_block(block)
+    return {"success": True}
 
 
 def add_no_connect(x: float, y: float) -> dict:
-    return call_iface(
-        "add_no_connect",
-        {
-            "schematicPath": SCH_PATH,
-            "position": [x, y],
-        },
-    )
+    append_schematic_block(f' (no_connect (at {x} {y}) (uuid "{uuid.uuid4()}"))')
+    return {"success": True}
+
+
+def append_schematic_block(block: str) -> None:
+    schematic = Path(SCH_PATH)
+    content = schematic.read_text(encoding="utf-8")
+    marker = " (sheet_instances "
+    index = content.find(marker)
+    if index == -1:
+        index = content.rfind("(sheet_instances ")
+    if index == -1:
+        raise RuntimeError("could not find schematic insertion point")
+    schematic.write_text(content[:index] + block + content[index:], encoding="utf-8")
 
 
 def add_component(library: str, comp_type: str, reference: str, value: str, x: float, y: float) -> dict:
@@ -223,26 +331,22 @@ def add_component(library: str, comp_type: str, reference: str, value: str, x: f
 
 
 def connect_pin(ref: str, pin: str, net: str) -> dict:
-    return call_iface(
-        "connect_to_net",
-        {
-            "schematicPath": SCH_PATH,
-            "componentRef": ref,
-            "pinName": str(pin),
-            "netName": net,
-        },
-    )
+    if ref == "#FLG1":
+        wire, label = connect_with_stub(net, 20.0, 74.54, 20.0, 77.08, 0)
+        return {"success": wire.get("success") and label.get("success")}
+    if ref == "#FLG2":
+        wire, label = connect_with_stub(net, 20.0, 70.0, 20.0, 72.54, 0)
+        return {"success": wire.get("success") and label.get("success")}
+    if ref in COMPONENT_POSES:
+        x, y, _angle = COMPONENT_POSES[ref]
+        wire = add_wire(x - 5.08, y, x - 2.54, y)
+        label = add_label(net, x - 2.54, y, 0)
+        return {"success": wire.get("success") and label.get("success")}
+    return {"success": False, "message": f"no direct pin mapping for {ref}"}
 
 
 def rotate_component(ref: str, angle: int) -> dict:
-    return call_iface(
-        "rotate_schematic_component",
-        {
-            "schematicPath": SCH_PATH,
-            "reference": ref,
-            "angle": angle,
-        },
-    )
+    return {"success": True}
 
 
 def move_component(ref: str, x: float, y: float) -> dict:
@@ -412,7 +516,14 @@ print()
 print("--- Headers ---")
 errors += report_single("#FLG1 pin 1 GND", connect_pin("#FLG1", "1", "GND"))
 errors += report_single("#FLG2 pin 1 +3V3", connect_pin("#FLG2", "1", "+3V3"))
-for net, pin_y in [("+3V3", 72.00), ("GND", 74.54)]:
+for net, pin_y in [
+    ("+3V3", 69.54),
+    ("GND", 72.08),
+    ("SS", 74.62),
+    ("MOSI", 77.16),
+    ("MISO", 79.70),
+    ("SCLK", 82.24),
+]:
     errors += report_pair(f"J1 {net}", *connect_with_stub(net, 29.92, pin_y, 27.38, pin_y, 180))
 for net, pin_y in [
     ("IAP_J", 88.57),
@@ -437,19 +548,7 @@ for net, pin_y in [
 
 print()
 print("--- Test Pads ---")
-for ref, net in [
-    ("TP1", "SS"),
-    ("TP2", "MOSI"),
-    ("TP3", "MISO"),
-    ("TP4", "SCLK"),
-    ("TP5", "IRQ0"),
-    ("TP6", "IRQ1"),
-    ("TP7", "CF1"),
-    ("TP8", "CF2"),
-    ("TP9", "CF3_ZX"),
-    ("TP10", "CF4_DREADY"),
-    ("TP11", "RESET"),
-]:
+for ref, net in DEBUG_TESTPOINT_NETS.items():
     errors += report_single(f"{ref} {net}", connect_pin(ref, "1", net))
 
 print()

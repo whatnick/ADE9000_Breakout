@@ -10,6 +10,25 @@ V9261F_BOARD_PATH = Path(r"C:\Users\tisha\dev\V9261F_Breakout\V9261F_Breakout.ki
 FRONT_TITLE = "ADE9000 Breakout"
 BACK_ATTRIBUTION = "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026"
 LOGO_REF = "LOGO1"
+SIGNAL_TEXTS = [
+    ("3V3", 134.600, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin1"),
+    ("GND", 136.400, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin2"),
+    ("SS", 138.200, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin3"),
+    ("MOSI", 140.000, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin4"),
+    ("MISO", 142.000, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin5"),
+    ("SCLK", 143.900, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin6"),
+    ("SPI", 139.885, 117.100, 0, "F.SilkS", 0.8, 0.2, "jst"),
+    ("RESET", 124.700, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp11"),
+    ("CLKIN", 130.500, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp12"),
+    ("CLKOUT", 143.500, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp13"),
+    ("IRQ0", 149.300, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp5"),
+    ("IRQ1", 153.400, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp6"),
+    ("CF1", 126.900, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp7"),
+    ("CF2", 131.100, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp8"),
+    ("CF3/ZX", 143.000, 119.250, 0, "B.SilkS", 0.8, 0.2, "tp9"),
+    ("DRDY", 151.500, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp10"),
+]
+LEGACY_SIGNAL_TEXTS = ["DREADY"]
 
 
 def escape_gr_text(value: str) -> str:
@@ -109,12 +128,30 @@ def apply_markings_text(board_text: str) -> str:
     board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(BACK_ATTRIBUTION))
     board_text = remove_blocks(board_text, "\t(footprint", LOGO_REF)
     board_text = remove_blocks(board_text, "\t(footprint", "OSHW-LOGO")
+    for value in [entry[0] for entry in SIGNAL_TEXTS] + LEGACY_SIGNAL_TEXTS:
+        board_text = remove_blocks(board_text, "\t(gr_text", value)
+        board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(value))
 
     blocks = [
         gr_text_block(FRONT_TITLE, 122.350, 96.400, 90, "F.SilkS", 0.8, 0.2, "26f5e411-5570-4436-91db-a9e900010002"),
         gr_text_block(BACK_ATTRIBUTION, 139.850, 86.500, 0, "B.SilkS", 0.8, 0.2, "a7fc7aca-9271-4c6a-98dc-a9e900010003", justify="bottom mirror", bold=True),
         oshw_logo_block(),
     ]
+    for value, x, y, angle, layer, size, thickness, name in SIGNAL_TEXTS:
+        justify = "mirror" if layer == "B.SilkS" else ""
+        blocks.append(
+            gr_text_block(
+                value,
+                x,
+                y,
+                angle,
+                layer,
+                size,
+                thickness,
+                f"a9e90002-0000-4000-8000-{name.encode('ascii').hex()[:12].ljust(12, '0')}",
+                justify=justify,
+            )
+        )
 
     insertion = board_text.find("\n\t(gr_")
     if insertion == -1:

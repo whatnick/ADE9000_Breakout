@@ -4,8 +4,9 @@ This repository is a KiCad 10 ADE9000 breakout board. Keep changes small, schema
 
 Project constraints:
 - Follow the ADE9000 datasheet Figure 55 test circuit.
-- Break out only `+3V3`, `GND`, and the analog input pairs on 0.1 inch headers.
-- Keep SPI, CF, IRQ, CLK, and RESET on test pads to minimize board size.
+- Break out analog input pairs on 0.1 inch headers.
+- Use `J1` as the 6-pin JST-SH debug connector for `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK`.
+- Keep CF, IRQ, CLK, and RESET on named bottom-side test pads to minimize board size.
 - Preserve the existing custom symbol and project-local library setup.
 
 Verified schematic-generation rules:
@@ -23,11 +24,14 @@ KiCad MCP notes:
 
 Verified PCB routing rules:
 - The compact QFN breakout routes cleanly with 0.15 mm tracks, 0.15 mm clearance, 0.45 mm vias, and 0.20 mm via drills.
+- The JST-SH redesign needs the bottom-side TP5-TP13 pads placed along the lower board edge; the older mid-board test-pad cluster blocks the SPI/JST fanout and leaves KiCad-visible unconnected items after SES import.
 - Keep the project `.kicad_pro` DRC rules aligned with the board routing rules; KiCad CLI validates the main board using project constraints, while temporary renamed boards can appear clean with only board-local settings.
+- Export fresh DSN files with KiCad Python `pcbnew.ExportSpecctraDSN`; the MCP DSN exporter can use stale in-memory copper during this project.
 - A fully routed board should report 0 unconnected items and 0 non-library DRC violations; the remaining `lib_footprint_mismatch` warnings are expected unless footprints are refreshed from libraries.
 
 Known outcome from debugging this design:
 - The rewired schematic reaches zero ERC errors.
-- The PCB routes to zero unconnected items with bottom-side digital/control test pads preserved.
-- Remaining ERC warnings are dominated by `endpoint_off_grid` from symbol placement and inherited wire endpoints.
+- The PCB routes to zero unconnected items with J1 JST-SH and bottom-edge TP5-TP13 preserved.
+- Final PCB DRC has only expected `lib_footprint_mismatch` warnings after silkscreen cleanup.
+- Remaining ERC warnings are dominated by `endpoint_off_grid` plus one footprint-link warning; there are zero ERC errors.
 - If reducing warnings, fix placement/grid alignment first instead of reverting to label-only connectivity.

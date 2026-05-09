@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/drc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-05-09T05:19:03",
+    "date": "2026-05-09T21:43:51",
     "ignored_checks": [
         {
             "description": "Footprint has no courtyard defined",
@@ -184,21 +184,6 @@
             "type": "lib_footprint_mismatch"
         },
         {
-            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
-            "items": [
-                {
-                    "description": "Footprint H4",
-                    "pos": {
-                        "x": 155.8,
-                        "y": 108.55
-                    },
-                    "uuid": "52e622c2-6241-4367-b83e-6fe1590ff370"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
             "description": "Footprint 'R_0402_1005Metric' does not match copy in library 'Resistor_SMD'",
             "items": [
                 {
@@ -319,21 +304,6 @@
             "type": "lib_footprint_mismatch"
         },
         {
-            "description": "Footprint 'PinHeader_1x02_P2.54mm_Vertical' does not match copy in library 'Connector_PinHeader_2.54mm'",
-            "items": [
-                {
-                    "description": "Footprint J1",
-                    "pos": {
-                        "x": 145.0,
-                        "y": 105.0
-                    },
-                    "uuid": "837cdc8a-04d4-40cb-8f4c-70780d42a446"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
             "description": "Footprint 'C_0402_1005Metric' does not match copy in library 'Capacitor_SMD'",
             "items": [
                 {
@@ -343,6 +313,21 @@
                         "y": 106.4
                     },
                     "uuid": "842afafe-3fb7-41a7-ab85-dbb82bfaf569"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint H4",
+                    "pos": {
+                        "x": 155.8,
+                        "y": 118.61
+                    },
+                    "uuid": "8642b511-33db-4c76-aea2-cd39565e74fe"
                 }
             ],
             "severity": "warning",
@@ -373,6 +358,21 @@
                         "y": 96.3
                     },
                     "uuid": "932d1880-47a9-405f-b46e-7d407716fc35"
+                }
+            ],
+            "severity": "warning",
+            "type": "lib_footprint_mismatch"
+        },
+        {
+            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
+            "items": [
+                {
+                    "description": "Footprint H2",
+                    "pos": {
+                        "x": 155.535,
+                        "y": 85.0
+                    },
+                    "uuid": "9408c68d-bed6-44bf-827e-c01682ddb1af"
                 }
             ],
             "severity": "warning",
@@ -532,12 +532,12 @@
             "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
             "items": [
                 {
-                    "description": "Footprint H3",
+                    "description": "Footprint H1",
                     "pos": {
                         "x": 124.235,
-                        "y": 108.65
+                        "y": 85.0
                     },
-                    "uuid": "c8f9e0c5-998e-4306-98d9-40652f532038"
+                    "uuid": "c910683a-60b9-445c-9980-aaad5b1c7e6c"
                 }
             ],
             "severity": "warning",
@@ -598,21 +598,6 @@
                         "y": 90.9
                     },
                     "uuid": "d913fc74-b5ec-4391-af8f-e67b129fb09f"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
-            "items": [
-                {
-                    "description": "Footprint H2",
-                    "pos": {
-                        "x": 155.535,
-                        "y": 85.0
-                    },
-                    "uuid": "dd9e89d1-61d1-41b3-a523-e6074edaa7f4"
                 }
             ],
             "severity": "warning",
@@ -757,12 +742,12 @@
             "description": "Footprint 'MountingHole_2.2mm_M2' does not match copy in library 'MountingHole'",
             "items": [
                 {
-                    "description": "Footprint H1",
+                    "description": "Footprint H3",
                     "pos": {
                         "x": 124.235,
-                        "y": 85.0
+                        "y": 118.71
                     },
-                    "uuid": "fcadac68-4c85-4400-8475-d1f4d479ca74"
+                    "uuid": "fcc19c19-b836-4c38-be1b-ed994da1704b"
                 }
             ],
             "severity": "warning",
@@ -789,8 +774,8 @@
                 {
                     "description": "Footprint TP9",
                     "pos": {
-                        "x": 148.5,
-                        "y": 107.6
+                        "x": 147.4,
+                        "y": 118.3
                     },
                     "uuid": "0bc0d958-a7b0-48a3-b7f4-80d984d931a8"
                 }
@@ -802,10 +787,10 @@
             "description": "Footprint 'TestPoint_Pad_D1.5mm' does not match copy in library 'TestPoint'",
             "items": [
                 {
-                    "description": "Footprint TP1",
+                    "description": "Footprint TP12",
                     "pos": {
-                        "x": 135.4,
-                        "y": 104.0
+                        "x": 132.4,
+                        "y": 115.3
                     },
                     "uuid": "19a6a209-a6c1-4971-8d9b-4249a7907507"
                 }
@@ -819,8 +804,8 @@
                 {
                     "description": "Footprint TP8",
                     "pos": {
-                        "x": 138.8,
-                        "y": 107.6
+                        "x": 132.4,
+                        "y": 118.3
                     },
                     "uuid": "2931e7a4-da91-4b56-ae0d-9d392678f311"
                 }
@@ -834,8 +819,8 @@
                 {
                     "description": "Footprint TP6",
                     "pos": {
-                        "x": 132.0,
-                        "y": 107.6
+                        "x": 154.2,
+                        "y": 115.3
                     },
                     "uuid": "4888e2cd-b775-4311-97ab-cc4f7d987737"
                 }
@@ -849,8 +834,8 @@
                 {
                     "description": "Footprint TP5",
                     "pos": {
-                        "x": 151.9,
-                        "y": 104.0
+                        "x": 150.8,
+                        "y": 115.3
                     },
                     "uuid": "4f5e1f66-a77c-4b81-bbdb-166f74b1e2b2"
                 }
@@ -862,10 +847,10 @@
             "description": "Footprint 'TestPoint_Pad_D1.5mm' does not match copy in library 'TestPoint'",
             "items": [
                 {
-                    "description": "Footprint TP2",
+                    "description": "Footprint TP13",
                     "pos": {
-                        "x": 138.8,
-                        "y": 104.0
+                        "x": 147.4,
+                        "y": 115.3
                     },
                     "uuid": "624ab260-e3b7-49c4-9cfb-0c9a54202a6a"
                 }
@@ -879,8 +864,8 @@
                 {
                     "description": "Footprint TP11",
                     "pos": {
-                        "x": 132.0,
-                        "y": 104.0
+                        "x": 129.0,
+                        "y": 115.3
                     },
                     "uuid": "682431e0-d99a-4013-987f-c73825711396"
                 }
@@ -892,40 +877,10 @@
             "description": "Footprint 'TestPoint_Pad_D1.5mm' does not match copy in library 'TestPoint'",
             "items": [
                 {
-                    "description": "Footprint TP3",
-                    "pos": {
-                        "x": 142.2,
-                        "y": 104.0
-                    },
-                    "uuid": "ba35d70b-a819-4175-8587-420e317ee6cf"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'TestPoint_Pad_D1.5mm' does not match copy in library 'TestPoint'",
-            "items": [
-                {
-                    "description": "Footprint TP4",
-                    "pos": {
-                        "x": 148.5,
-                        "y": 104.0
-                    },
-                    "uuid": "baf898db-e9a3-47da-b388-fe00b99c790f"
-                }
-            ],
-            "severity": "warning",
-            "type": "lib_footprint_mismatch"
-        },
-        {
-            "description": "Footprint 'TestPoint_Pad_D1.5mm' does not match copy in library 'TestPoint'",
-            "items": [
-                {
                     "description": "Footprint TP7",
                     "pos": {
-                        "x": 135.4,
-                        "y": 107.6
+                        "x": 129.0,
+                        "y": 118.3
                     },
                     "uuid": "cc5f50b6-a7b2-4f13-b59a-0cd62d7ce5c8"
                 }
@@ -939,8 +894,8 @@
                 {
                     "description": "Footprint TP10",
                     "pos": {
-                        "x": 151.9,
-                        "y": 107.6
+                        "x": 150.8,
+                        "y": 118.3
                     },
                     "uuid": "dffdb48b-feb9-4536-8710-6b49a705be93"
                 }

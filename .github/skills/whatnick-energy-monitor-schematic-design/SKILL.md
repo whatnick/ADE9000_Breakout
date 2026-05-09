@@ -19,7 +19,7 @@ Use this skill for KiCad schematic work on compact energy monitor breakouts in t
 Create small, breadboard-friendly energy monitor breakouts that expose the useful measurement and power pins while keeping digital/debug signals compact.
 
 - Put power and analog measurement inputs on 0.1 inch headers.
-- Put digital, clock, reset, IRQ, CF, UART, and SPI-style signals on test pads unless the reference board intentionally uses a single combined header.
+- Put digital, clock, reset, IRQ, CF, UART, and SPI-style signals on test pads unless the reference board intentionally uses a compact debug connector.
 - Preserve project-local symbols and footprints; do not replace custom libraries with guessed global library parts.
 - Follow the IC datasheet reference or test circuit before optimizing the board.
 
@@ -33,9 +33,10 @@ Use V93XX boards for style and compactness:
 
 Use ADE9000 for the newer split-header compact policy:
 
-- `J1`: power only.
+- `J1`: 6-pin JST-SH for `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK`.
 - `J2`/`J3`: current and voltage analog pairs only.
-- `TP*`: SPI, CF, IRQ, clock, and reset signals.
+- `TP5` through `TP13`: CF, IRQ, clock, and reset signals.
+- `TP1` through `TP4` are obsolete in the JST-SH revision and should not be regenerated.
 - Figure 55 support circuit is populated on board.
 
 ## Schematic Procedure

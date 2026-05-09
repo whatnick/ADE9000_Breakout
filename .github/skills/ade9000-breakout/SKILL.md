@@ -5,8 +5,9 @@ Use this skill when editing or regenerating the ADE9000 breakout schematic with 
 ## Goal
 
 Maintain a compact ADE9000 breakout that is electrically correct in KiCad 10:
-- power and analog inputs on headers
-- digital signals on test pads
+- analog inputs on 0.1 inch headers
+- `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK` on `J1` 6-pin JST-SH
+- CF, IRQ, CLK, and RESET debug signals on named test pads
 - datasheet Figure 55 support circuitry populated
 
 ## Validated workflow
@@ -35,10 +36,14 @@ Maintain a compact ADE9000 breakout that is electrically correct in KiCad 10:
 
 ## Compact breakout rules
 
-- Keep `J1` as power only.
+- Keep `J1` as `Connector_JST:JST_SHL_SM06B-SHLS-TF_1x06-1MP_P1.00mm_Horizontal` with pinout `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, `SCLK`.
 - Keep `J2` and `J3` for analog current/voltage inputs.
-- Keep `SS`, `MOSI`, `MISO`, `SCLK`, `IRQ0`, `IRQ1`, `CF1`, `CF2`, `CF3_ZX`, `CF4_DREADY`, and `RESET` on test pads.
+- Keep `IRQ0`, `IRQ1`, `CF1`, `CF2`, `CF3_ZX`, `CF4_DREADY`, `RESET`, `CLKIN`, and `CLKOUT` on `TP5` through `TP13`.
+- Do not recreate obsolete `TP1` through `TP4`; those SPI signals now live on `J1`.
+- For the PCB, place `TP5` through `TP13` on the lower board edge before routing. The older mid-board TP cluster blocks JST/SPI fanout.
 
 ## Canonical validation command
 
 `& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" sch erc --format json --output "c:\Users\tisha\dev\ADE9000_Breakout\erc.json" "c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_sch"`
+
+Expected final schematic state: zero ERC errors. Existing warnings are placement/grid hygiene, not connectivity failures.

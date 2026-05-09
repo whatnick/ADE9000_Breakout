@@ -9,16 +9,39 @@ ROOT = Path(__file__).resolve().parents[1]
 BOARD_PATH = ROOT / "ADE9000_Breakout.kicad_pcb"
 QFN_LIB = Path(r"C:\Program Files\KiCad\10.0\share\kicad\footprints\Package_DFN_QFN.pretty")
 QFN_NAME = "QFN-40-1EP_6x6mm_P0.5mm_EP4.6x4.6mm"
+JST_LIB = Path(r"C:\Program Files\KiCad\10.0\share\kicad\footprints\Connector_JST.pretty")
+JST_NAME = "JST_SHL_SM06B-SHLS-TF_1x06-1MP_P1.00mm_Horizontal"
+TESTPOINT_LIB = Path(r"C:\Program Files\KiCad\10.0\share\kicad\footprints\TestPoint.pretty")
+TESTPOINT_NAME = "TestPoint_Pad_D1.5mm"
 
 BOARD_LEFT = 120.835
 BOARD_TOP = 82.423
 BOARD_WIDTH = 38.100
-BOARD_HEIGHT = 27.940
+BOARD_HEIGHT = 38.000
 BOARD_RIGHT = BOARD_LEFT + BOARD_WIDTH
 BOARD_BOTTOM = BOARD_TOP + BOARD_HEIGHT
 
 SILK_TEXT_SIZE = 0.8
 SILK_TEXT_THICKNESS = 0.2
+DEBUG_JST_NETS = {
+    "1": "+3V3",
+    "2": "GND",
+    "3": "SS",
+    "4": "MOSI",
+    "5": "MISO",
+    "6": "SCLK",
+}
+DEBUG_TESTPAD_NETS = {
+    "TP5": "IRQ0",
+    "TP6": "IRQ1",
+    "TP7": "CF1",
+    "TP8": "CF2",
+    "TP9": "CF3_ZX",
+    "TP10": "CF4_DREADY",
+    "TP11": "RESET",
+    "TP12": "CLKIN",
+    "TP13": "CLKOUT",
+}
 
 U1_NETS = {
     "1": "+3V3",
@@ -67,8 +90,15 @@ def vmm(x: float, y: float) -> pcbnew.VECTOR2I:
     return pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y))
 
 
+def load_footprint(library_path: str | Path, footprint_name: str) -> pcbnew.FOOTPRINT | None:
+    plugin = pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.KICAD_SEXP)
+    return plugin.FootprintLoad(str(library_path), footprint_name)
+
+
 def footprint_by_ref(board: pcbnew.BOARD, ref: str) -> pcbnew.FOOTPRINT | None:
     for fp in board.GetFootprints():
+        if not hasattr(fp, "GetReference"):
+            continue
         if fp.GetReference() == ref:
             return fp
     return None
@@ -109,6 +139,8 @@ def place_ref(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 
 
 def normalize_silkscreen(board: pcbnew.BOARD) -> None:
     for fp in board.GetFootprints():
+        if not hasattr(fp, "GetFields"):
+            continue
         for field in fp.GetFields():
             set_field_style(field)
         fp.Reference().SetLayer(pcbnew.B_Fab if fp.GetLayer() == pcbnew.B_Cu else pcbnew.F_Fab)
@@ -131,7 +163,7 @@ def add_u1_if_missing(board: pcbnew.BOARD) -> None:
     if footprint_by_ref(board, "U1") is not None:
         return
 
-    fp = pcbnew.FootprintLoad(str(QFN_LIB), QFN_NAME)
+    fp = load_footprint(QFN_LIB, QFN_NAME)
     if fp is None:
         raise RuntimeError(f"Could not load {QFN_LIB / (QFN_NAME + '.kicad_mod')}")
 
@@ -149,6 +181,79 @@ def add_u1_if_missing(board: pcbnew.BOARD) -> None:
             set_net(board, pad, net_name)
 
     board.Add(fp)
+
+
+def copy_board_link(old_fp: pcbnew.FOOTPRINT | None, new_fp: pcbnew.FOOTPRINT) -> None:
+    if old_fp is None:
+        return
+    if hasattr(old_fp, "GetPath") and hasattr(new_fp, "SetPath"):
+        new_fp.SetPath(old_fp.GetPath())
+    if hasattr(old_fp, "GetSheetname") and hasattr(new_fp, "SetSheetname"):
+        new_fp.SetSheetname(old_fp.GetSheetname())
+    if hasattr(old_fp, "GetSheetfile") and hasattr(new_fp, "SetSheetfile"):
+        new_fp.SetSheetfile(old_fp.GetSheetfile())
+
+
+def replace_j1_with_debug_jst(
+    board: pcbnew.BOARD,
+    old_fp: pcbnew.FOOTPRINT | None = None,
+    replacement_fp: pcbnew.FOOTPRINT | None = None,
+    nets_already_set: bool = False,
+) -> None:
+    old_fp = old_fp or footprint_by_ref(board, "J1")
+    needs_replace = old_fp is None or JST_NAME not in old_fp.GetFPIDAsString()
+    if needs_replace:
+        fp = replacement_fp or load_footprint(JST_LIB, JST_NAME)
+        if fp is None:
+            raise RuntimeError(f"Could not load {JST_LIB / (JST_NAME + '.kicad_mod')}")
+        fp.SetReference("J1")
+        fp.SetValue("SPI JST-SH")
+        copy_board_link(old_fp, fp)
+        if old_fp is not None:
+            board.Remove(old_fp)
+        board.Add(fp)
+    else:
+        fp = old_fp
+
+    fp.SetPosition(vmm(139.885, 112.150))
+    fp.SetOrientationDegrees(0)
+    fp.SetLayer(pcbnew.F_Cu)
+    if not nets_already_set:
+        for pad in fp.Pads():
+            net_name = DEBUG_JST_NETS.get(pad.GetNumber())
+            if net_name is not None:
+                set_net(board, pad, net_name)
+
+
+def add_or_update_debug_testpads(board: pcbnew.BOARD, existing_testpads: dict[str, pcbnew.FOOTPRINT] | None = None) -> None:
+    existing_testpads = existing_testpads or {}
+    obsolete_refs = ["TP1", "TP2", "TP3", "TP4"]
+    spare_testpads = [fp for ref in obsolete_refs if (fp := existing_testpads.get(ref) or footprint_by_ref(board, ref)) is not None]
+
+    for ref, net_name in DEBUG_TESTPAD_NETS.items():
+        fp = existing_testpads.get(ref) or footprint_by_ref(board, ref)
+        if fp is None:
+            if spare_testpads:
+                fp = spare_testpads.pop(0)
+            else:
+                fp = load_footprint(TESTPOINT_LIB, TESTPOINT_NAME)
+                if fp is None:
+                    raise RuntimeError(f"Could not load {TESTPOINT_LIB / (TESTPOINT_NAME + '.kicad_mod')}")
+            fp.SetReference(ref)
+            if fp.GetParent() is None:
+                board.Add(fp)
+        else:
+            if fp in spare_testpads:
+                spare_testpads.remove(fp)
+            fp.SetValue(net_name)
+        fp.SetValue(net_name)
+        if fp.GetLayer() != pcbnew.B_Cu:
+            fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
+        for pad in fp.Pads():
+            set_net(board, pad, net_name)
+
+    for fp in spare_testpads:
+        board.Remove(fp)
 
 
 # Corner radius for the board outline (replaces the old 45-degree chamfer segments).
@@ -191,7 +296,7 @@ def add_mounting_holes(board: pcbnew.BOARD) -> None:
         ("H4", BOARD_LEFT  + MH_INSET, BOARD_BOTTOM - MH_INSET),
     ]
     for ref, x, y in corners:
-        fp = pcbnew.FootprintLoad(MH_LIB, MH_NAME)
+        fp = load_footprint(MH_LIB, MH_NAME)
         if fp is None:
             raise RuntimeError(f"Could not load {MH_LIB}/{MH_NAME}.kicad_mod")
         fp.SetReference(ref)
@@ -202,12 +307,23 @@ def add_mounting_holes(board: pcbnew.BOARD) -> None:
 
 def place_all(board: pcbnew.BOARD) -> None:
     add_u1_if_missing(board)
+    old_j1 = footprint_by_ref(board, "J1")
+    j1_replacement = None
+    if old_j1 is None or JST_NAME not in old_j1.GetFPIDAsString():
+        j1_replacement = load_footprint(JST_LIB, JST_NAME)
+        if j1_replacement is not None:
+            for pad in j1_replacement.Pads():
+                net_name = DEBUG_JST_NETS.get(pad.GetNumber())
+                if net_name is not None:
+                    set_net(board, pad, net_name)
+    add_or_update_debug_testpads(board)
+    replace_j1_with_debug_jst(board, old_j1, j1_replacement, j1_replacement is not None)
 
     place(board, "U1", 139.885, 96.393, 0)
 
     place(board, "J2", 126.000, 87.900, 0)
     place(board, "J3", 155.600, 88.500, 0)
-    place(board, "J1", 145.000, 105.000, 0)
+    place(board, "J1", 139.885, 112.150, 0)
 
     current_rows = ["IAP", "IAN", "IBP", "IBN", "ICP", "ICN", "INP", "INN"]
     for index, _name in enumerate(current_rows):
@@ -241,17 +357,15 @@ def place_all(board: pcbnew.BOARD) -> None:
         place(board, ref, x, y, angle)
 
     testpads = {
-        "TP11": (132.000, 104.000),
-        "TP1": (135.400, 104.000),
-        "TP2": (138.800, 104.000),
-        "TP3": (142.200, 104.000),
-        "TP4": (148.500, 104.000),
-        "TP5": (151.900, 104.000),
-        "TP6": (132.000, 107.600),
-        "TP7": (135.400, 107.600),
-        "TP8": (138.800, 107.600),
-        "TP9": (148.500, 107.600),
-        "TP10": (151.900, 107.600),
+        "TP11": (129.000, 115.300),
+        "TP12": (132.400, 115.300),
+        "TP13": (147.400, 115.300),
+        "TP5": (150.800, 115.300),
+        "TP6": (154.200, 115.300),
+        "TP7": (129.000, 118.300),
+        "TP8": (132.400, 118.300),
+        "TP9": (147.400, 118.300),
+        "TP10": (150.800, 118.300),
     }
     for ref, (x, y) in testpads.items():
         place_bottom(board, ref, x, y, 0)
@@ -294,9 +408,6 @@ def place_all(board: pcbnew.BOARD) -> None:
     for index, ref in enumerate(testpads):
         x, y = testpads[ref]
         place_ref(board, ref, x, y + 1.650, 0)
-
-    draw_outline(board)
-    add_mounting_holes(board)
 
 
 def main() -> None:

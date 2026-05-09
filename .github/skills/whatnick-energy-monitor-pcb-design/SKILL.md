@@ -34,7 +34,7 @@ Keep the board compact, breadboard-friendly, and manufacturable while preserving
 The V9360, V9381, and ADE9000 boards use a similar compact rounded/chamfered rectangle. MCP3909 is the rounded-corner reference.
 
 - Board envelope is about `38.2 mm x 28.04 mm` including edge stroke.
-- ADE9000 script constants use `38.100 mm x 27.940 mm` with `0.1 mm` Edge.Cuts width.
+- ADE9000 JST-SH revision uses `38.100 mm x 38.000 mm` with `0.1 mm` Edge.Cuts width.
 - Round/chamfer the corners by about `5.08 mm`; MCP3909 uses 5.08 mm radius corner arcs plus straight Edge.Cuts segments.
 - Keep copper, holes, test pads, and silkscreen clear of rounded/chamfered edges before routing.
 
@@ -47,8 +47,8 @@ For boards that need mounting holes, use standard M2 NPTH holes while preserving
 - Place holes near corners but outside component courtyards and away from routed copper. On ADE9000, the validated positions are approximately:
   - `H1`: `(124.235, 85.000)`
   - `H2`: `(155.535, 85.000)`
-  - `H3`: `(124.235, 108.650)`
-  - `H4`: `(155.800, 108.550)`
+  - `H3`: `(124.235, 118.710)`
+  - `H4`: `(155.800, 118.610)`
 - Hide mounting-hole reference and value fields; H* designators are intentionally omitted from silkscreen to keep NPTH corners clear.
 - After adding holes, DRC must not introduce `npth_inside_courtyard`, `hole_clearance`, `copper_edge_clearance`, `silk_over_copper`, or `silk_overlap` violations.
 - MCP3909 has the rounded-corner outline style but no M2 mounting-hole footprint precedent; use ADE9000's validated M2 setup as the local pattern.
@@ -60,10 +60,10 @@ Use these placement rules before routing:
 1. Place the monitor IC near the center with pin banks facing their support circuits.
 2. Place analog anti-alias resistors/capacitors as short rows between IC pins and analog headers.
 3. Place voltage/current input headers at the edges and keep their pin order readable from the board edge.
-4. Place power header separately when the design has a dedicated power header.
+4. Place the power/debug connector separately when the design has a combined connector such as ADE9000 `J1` JST-SH.
 5. Place crystals/oscillators close to clock pins; keep load capacitors tight and symmetric.
 6. Place decoupling capacitors close to their supply/reference pins, with GND return kept short.
-7. Put digital/debug test pads on B.Cu. V9381 uses bottom-side test pads along the left/right edges; ADE9000 uses a two-row bottom-side cluster.
+7. Put digital/debug test pads on B.Cu. V9381 uses bottom-side test pads along the left/right edges; ADE9000 uses bottom-edge `TP5` through `TP13` rows so the JST/SPI fanout corridor stays open.
 8. Add bottom-side OSHW/logo marks only after electrical/mechanical placement is stable.
 
 ## Board Markings
@@ -104,6 +104,7 @@ Script patterns to preserve:
 - Keep placement deterministic so rerunning the script produces the same board.
 - For mechanical edits, use `scripts/apply_mechanical.py` to add the rounded outline and M2 holes reproducibly.
 - For board identity markings, use `scripts/apply_board_markings.py`; `scripts/apply_mechanical.py` also reapplies these markings after regenerating holes/outline.
+- For ADE9000, run `scripts/place_pcb.py` before DSN export so `J1` is the JST-SH connector and `TP5` through `TP13` are on the lower board edge. The older mid-board TP cluster routes poorly and leaves imported KiCad DRC unconnected items.
 - KiCad 10 Python can decay SWIG board collections after removals/additions. Collect existing footprints/drawings into lists before mutating the board, finish reference-field edits before adding new Edge.Cuts shapes, and save without re-querying mutated collections.
 - If new board-local mounting-hole fields need to be hidden, post-process the serialized `.kicad_pcb` properties rather than touching new-footprint field SWIG objects after insertion.
 
@@ -118,6 +119,13 @@ PowerShell note: do not use bash heredocs. Use checked-in scripts or `python -c`
 5. Route digital/test-pad signals last; vias are acceptable to bottom-side test pads.
 6. Use copper pours after critical routes are stable, then refill zones and rerun DRC.
 7. If using Freerouting, export DSN, run router, import SES, then manually inspect and clean analog/clock routes.
+
+ADE9000 Freerouting notes:
+
+- Clear stale `(segment ...)` and `(via ...)` copper with `scripts/clear_routes_text.py` before a fresh autoroute.
+- Export DSN with KiCad Python `pcbnew.ExportSpecctraDSN`; avoid the MCP DSN exporter when KiCad/MCP state may be stale.
+- Use the bundled JRE 25 and double-dash Freerouting settings, for example `--gui.enabled=false --router.max_passes=100 --router.max_threads=4`.
+- The validated JST-SH placement routes to `0` unconnected items; final DRC has only expected `lib_footprint_mismatch` warnings if footprints are not refreshed from libraries.
 
 Installed Freerouting context for this machine:
 
@@ -158,9 +166,10 @@ V93XX examples:
 ADE9000 current pattern:
 
 - U1 QFN centered around `(139.885, 96.393)`.
-- J2 current header on the left, J3 voltage header on the right, J1 power header on the front side.
+- J2 current header on the left, J3 voltage header on the right, J1 JST-SH debug connector on the front side.
+- J1 pinout is `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, `SCLK`.
 - Board uses MCP3909-style rounded corners with four M2 NPTH holes at `H1` through `H4`.
 - Mounting-hole `H*` reference designators are hidden by design.
 - Front silkscreen includes `ADE9000 Breakout`; back silkscreen includes `by Tisham Dhar`, `https://whatnick.com`, `v0.1 09/05/2026`, and a B.Cu OSHW logo.
-- Digital pads `TP1` through `TP11` on B.Cu.
+- Digital/control pads `TP5` through `TP13` on B.Cu lower edge; `TP1` through `TP4` are obsolete.
 - Analog filter rows use 0402 passives near U1; bulk/reference caps use 0805/0402 as appropriate.
