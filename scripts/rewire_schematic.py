@@ -20,21 +20,38 @@ KI_IFACE = r"c:\Users\tisha\dev\KiCAD-MCP-Server\python\kicad_interface.py"
 KI_PYTHON = r"C:\Program Files\KiCad\10.0\bin\python.exe"
 IO_STUB = 2.54
 PASSIVE_STUB = 1.27
-FILTER_R_X = 70.0
-FILTER_C_X = 90.0
-FILTER_INPUT_LABEL_X = 50.0
+FILTER_R_X = 82.0
+FILTER_C_X = 102.0
+FILTER_INPUT_LABEL_X = 62.0
 FILTER_OUTPUT_LABEL_X = 98.0
-DEBUG_JST_NETS = ["+3V3", "GND", "SS", "MOSI", "MISO", "SCLK"]
-DEBUG_TESTPOINT_NETS = {
-    "TP5": "IRQ0",
-    "TP6": "IRQ1",
-    "TP7": "CF1",
-    "TP8": "CF2",
-    "TP9": "CF3_ZX",
-    "TP10": "CF4_DREADY",
-    "TP11": "RESET",
-    "TP12": "CLKIN",
-    "TP13": "CLKOUT",
+DIGITAL_HEADER_NETS = [
+    "+3V3",
+    "GND",
+    "SS",
+    "MOSI",
+    "MISO",
+    "SCLK",
+    "IRQ0",
+    "IRQ1",
+    "CF1",
+    "CF2",
+    "CF3_ZX",
+    "CF4_DREADY",
+    "RESET",
+    "CLKIN",
+    "CLKOUT",
+    "GND",
+]
+CURRENT_JACK_NETS = {
+    "CTA1": ["IAP_J", "IAN_J", "GND"],
+    "CTB1": ["IBP_J", "IBN_J", "GND"],
+    "CTC1": ["ICP_J", "ICN_J", "GND"],
+    "CTN1": ["INP_J", "INN_J", "GND"],
+}
+VOLTAGE_TERMINAL_NETS = {
+    "J2": ["VAP_J", "VAN_J"],
+    "J3": ["VBP_J", "VBN_J"],
+    "J4": ["VCP_J", "VCN_J"],
 }
 
 
@@ -57,16 +74,14 @@ FILTER_ROWS = [
 
 
 COMPONENT_POSES = {
-    "J1": (35.0, 74.62, 0.0),
-    "TP5": (195.0, 87.32, 0.0),
-    "TP6": (195.0, 92.4, 0.0),
-    "TP7": (195.0, 97.48, 0.0),
-    "TP8": (195.0, 102.56, 0.0),
-    "TP9": (195.0, 107.64, 0.0),
-    "TP10": (195.0, 112.72, 0.0),
-    "TP11": (195.0, 117.8, 0.0),
-    "TP12": (195.0, 122.88, 0.0),
-    "TP13": (195.0, 127.96, 0.0),
+    "J1": (210.0, 110.0, 0.0),
+    "CTA1": (35.0, 55.0, 0.0),
+    "CTB1": (35.0, 70.0, 0.0),
+    "CTC1": (35.0, 85.0, 0.0),
+    "CTN1": (35.0, 100.0, 0.0),
+    "J2": (35.0, 127.0, 0.0),
+    "J3": (35.0, 140.0, 0.0),
+    "J4": (35.0, 153.0, 0.0),
     "C7": (108.0, 53.0, 0.0),
     "C8": (114.0, 53.0, 0.0),
     "C5": (108.0, 145.0, 0.0),
@@ -84,6 +99,9 @@ COMPONENT_POSES = {
     "C2": (172.0, 158.0, 0.0),
     "#FLG1": (20.0, 74.54, 0.0),
     "#FLG2": (20.0, 70.0, 0.0),
+    "#FLG3": (195.0, 134.0, 0.0),
+    "#FLG4": (195.0, 139.0, 0.0),
+    "#FLG5": (195.0, 144.0, 0.0),
 }
 
 
@@ -140,6 +158,36 @@ def replace_string(block, old: str, new: str) -> None:
             replace_string(item, old, new)
 
 
+def ensure_connector_symbol(
+    data: list,
+    symbols: list,
+    ref: str,
+    value: str,
+    lib_id: str,
+    footprint: str,
+    template_ref: str,
+) -> None:
+    existing = next((symbol for symbol in symbols if component_ref(symbol) == ref), None)
+    if existing is None:
+        template = next((symbol for symbol in symbols if component_ref(symbol) == template_ref), None)
+        if template is None:
+            template = next((symbol for symbol in symbols if component_ref(symbol) in {"J1", "J2", "J3"}), None)
+        if template is None:
+            return
+        existing = copy.deepcopy(template)
+        old_ref = component_ref(existing)
+        if old_ref is not None:
+            replace_string(existing, old_ref, ref)
+        refresh_uuids(existing)
+        data.insert(-2, existing)
+        symbols.append(existing)
+
+    set_lib_id(existing, lib_id)
+    set_property(existing, "Reference", ref)
+    set_property(existing, "Value", value)
+    set_property(existing, "Footprint", footprint)
+
+
 def normalize_debug_symbols(data: list) -> None:
     symbols = [
         item
@@ -147,14 +195,7 @@ def normalize_debug_symbols(data: list) -> None:
         if isinstance(item, list) and item and atom_name(item[0]) == "symbol"
     ]
 
-    # J1 is now the 6-pin JST-SH SPI/power debug connector.
-    for symbol in symbols:
-        if component_ref(symbol) == "J1":
-            set_lib_id(symbol, "Connector_Generic:Conn_01x06")
-            set_property(symbol, "Value", "SPI JST-SH")
-            set_property(symbol, "Footprint", "Connector_JST:JST_SHL_SM06B-SHLS-TF_1x06-1MP_P1.00mm_Horizontal")
-
-    # The SPI bus moves from TP1..TP4 to J1; keep other debug/control signals on test pads.
+    # The larger ATM-style board replaces compact debug pads with connectorized I/O.
     data[:] = [
         item
         for item in data
@@ -162,7 +203,7 @@ def normalize_debug_symbols(data: list) -> None:
             isinstance(item, list)
             and item
             and atom_name(item[0]) == "symbol"
-            and component_ref(item) in {"TP1", "TP2", "TP3", "TP4"}
+            and component_ref(item) in {"TP1", "TP2", "TP3", "TP4", "TP5", "TP6", "TP7", "TP8", "TP9", "TP10", "TP11", "TP12", "TP13"}
         )
     ]
 
@@ -171,24 +212,35 @@ def normalize_debug_symbols(data: list) -> None:
         for item in data
         if isinstance(item, list) and item and atom_name(item[0]) == "symbol"
     ]
-    existing_refs = {component_ref(symbol) for symbol in symbols}
-    template = next((symbol for symbol in symbols if component_ref(symbol) == "TP11"), None)
-    if template is None:
-        return
-
-    for ref, net in DEBUG_TESTPOINT_NETS.items():
-        if ref in existing_refs:
-            symbol = next(symbol for symbol in symbols if component_ref(symbol) == ref)
-            set_property(symbol, "Value", net)
-            continue
-
-        symbol = copy.deepcopy(template)
-        replace_string(symbol, "TP11", ref)
-        replace_string(symbol, "RESET", net)
-        refresh_uuids(symbol)
-        set_property(symbol, "Reference", ref)
-        set_property(symbol, "Value", net)
-        data.insert(-2, symbol)
+    ensure_connector_symbol(
+        data,
+        symbols,
+        "J1",
+        "Digital breadboard",
+        "Connector_Generic:Conn_01x16",
+        "Connector_PinHeader_2.54mm:PinHeader_1x16_P2.54mm_Vertical",
+        "J1",
+    )
+    for ref in CURRENT_JACK_NETS:
+        ensure_connector_symbol(
+            data,
+            symbols,
+            ref,
+            "CT stereo jack",
+            "Connector_Generic:Conn_01x03",
+            "Connector_Audio:Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal",
+            "J2",
+        )
+    for ref in VOLTAGE_TERMINAL_NETS:
+        ensure_connector_symbol(
+            data,
+            symbols,
+            ref,
+            "Voltage terminal",
+            "Connector_Generic:Conn_01x02",
+            "TerminalBlock_4Ucon:TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal",
+            "J3",
+        )
 
 
 def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
@@ -337,6 +389,10 @@ def connect_pin(ref: str, pin: str, net: str) -> dict:
     if ref == "#FLG2":
         wire, label = connect_with_stub(net, 20.0, 70.0, 20.0, 72.54, 0)
         return {"success": wire.get("success") and label.get("success")}
+    if ref in {"#FLG3", "#FLG4", "#FLG5"}:
+        x, y, _angle = COMPONENT_POSES[ref]
+        wire, label = connect_with_stub(net, x, y, x, y + 2.54, 0)
+        return {"success": wire.get("success") and label.get("success")}
     if ref in COMPONENT_POSES:
         x, y, _angle = COMPONENT_POSES[ref]
         wire = add_wire(x - 5.08, y, x - 2.54, y)
@@ -410,6 +466,9 @@ schematic = Path(SCH_PATH)
 content = schematic.read_text(encoding="utf-8")
 has_gnd_flag = '"#FLG1"' in content
 has_3v3_flag = '"#FLG2"' in content
+has_ss_flag = '"#FLG3"' in content
+has_mosi_flag = '"#FLG4"' in content
+has_sclk_flag = '"#FLG5"' in content
 wire_count = content.count("(wire ")
 label_count = content.count("(label ")
 junction_count = content.count("(junction ")
@@ -445,6 +504,18 @@ else:
         "Add #FLG2",
         add_component("power", "PWR_FLAG", "#FLG2", "PWR_FLAG", 20.0, 70.0),
     )
+for flag_ref, flag_net, flag_x, flag_y, is_present in [
+    ("#FLG3", "SS", 195.0, 134.0, has_ss_flag),
+    ("#FLG4", "MOSI", 195.0, 139.0, has_mosi_flag),
+    ("#FLG5", "SCLK", 195.0, 144.0, has_sclk_flag),
+]:
+    if is_present:
+        print(f"  ✓ {flag_ref} already present")
+    else:
+        errors += report_single(
+            f"Add {flag_ref} external driver flag for {flag_net}",
+            add_component("power", "PWR_FLAG", flag_ref, "PWR_FLAG", flag_x, flag_y),
+        )
 
 print()
 print("--- Normalize Dense Passive Orientation ---")
@@ -513,43 +584,29 @@ for net, pin_y in [
     errors += report_pair(f"U1 right {net} @ {pin_y:.2f}", *connect_with_stub(net, 142.7, pin_y, 145.24, pin_y, 0))
 
 print()
-print("--- Headers ---")
+print("--- External Connectors ---")
 errors += report_single("#FLG1 pin 1 GND", connect_pin("#FLG1", "1", "GND"))
 errors += report_single("#FLG2 pin 1 +3V3", connect_pin("#FLG2", "1", "+3V3"))
-for net, pin_y in [
-    ("+3V3", 69.54),
-    ("GND", 72.08),
-    ("SS", 74.62),
-    ("MOSI", 77.16),
-    ("MISO", 79.70),
-    ("SCLK", 82.24),
-]:
-    errors += report_pair(f"J1 {net}", *connect_with_stub(net, 29.92, pin_y, 27.38, pin_y, 180))
-for net, pin_y in [
-    ("IAP_J", 88.57),
-    ("IAN_J", 91.11),
-    ("IBP_J", 93.65),
-    ("IBN_J", 96.19),
-    ("ICP_J", 98.73),
-    ("ICN_J", 101.27),
-    ("INP_J", 103.81),
-    ("INN_J", 106.35),
-]:
-    errors += report_pair(f"J2 {net}", *connect_with_stub(net, 29.92, pin_y, 27.38, pin_y, 180))
-for net, pin_y in [
-    ("VAP_J", 119.05),
-    ("VAN_J", 121.59),
-    ("VBP_J", 124.13),
-    ("VBN_J", 126.67),
-    ("VCP_J", 129.21),
-    ("VCN_J", 131.75),
-]:
-    errors += report_pair(f"J3 {net}", *connect_with_stub(net, 29.92, pin_y, 27.38, pin_y, 180))
 
-print()
-print("--- Test Pads ---")
-for ref, net in DEBUG_TESTPOINT_NETS.items():
-    errors += report_single(f"{ref} {net}", connect_pin(ref, "1", net))
+header_x, header_y, _header_angle = COMPONENT_POSES["J1"]
+for index, net in enumerate(DIGITAL_HEADER_NETS):
+    pin_y = header_y - 19.05 + index * 2.54
+    errors += report_pair(f"J1 pin {index + 1} {net}", *connect_with_stub(net, header_x - 5.08, pin_y, header_x - 7.62, pin_y, 180))
+
+for ref, nets in CURRENT_JACK_NETS.items():
+    jack_x, jack_y, _angle = COMPONENT_POSES[ref]
+    for index, net in enumerate(nets):
+        pin_y = jack_y - 2.54 + index * 2.54
+        errors += report_pair(f"{ref} pin {index + 1} {net}", *connect_with_stub(net, jack_x - 5.08, pin_y, jack_x - 7.62, pin_y, 180))
+
+for ref, nets in VOLTAGE_TERMINAL_NETS.items():
+    terminal_x, terminal_y, _angle = COMPONENT_POSES[ref]
+    for index, net in enumerate(nets):
+        pin_y = terminal_y + index * 2.54
+        errors += report_pair(f"{ref} pin {index + 1} {net}", *connect_with_stub(net, terminal_x - 5.08, pin_y, terminal_x - 7.62, pin_y, 180))
+
+for flag_ref, flag_net in [("#FLG3", "SS"), ("#FLG4", "MOSI"), ("#FLG5", "SCLK")]:
+    errors += report_single(f"{flag_ref} {flag_net}", connect_pin(flag_ref, "1", flag_net))
 
 print()
 print("--- AA Input Filters ---")

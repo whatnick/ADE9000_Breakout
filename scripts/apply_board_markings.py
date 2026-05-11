@@ -11,24 +11,32 @@ FRONT_TITLE = "ADE9000 Breakout"
 BACK_ATTRIBUTION = "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026"
 LOGO_REF = "LOGO1"
 SIGNAL_TEXTS = [
-    ("3V3", 134.600, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin1"),
-    ("GND", 136.400, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin2"),
-    ("SS", 138.200, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin3"),
-    ("MOSI", 140.000, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin4"),
-    ("MISO", 142.000, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin5"),
-    ("SCLK", 143.900, 111.850, 90, "B.SilkS", 0.8, 0.2, "pin6"),
-    ("SPI", 139.885, 117.100, 0, "F.SilkS", 0.8, 0.2, "jst"),
-    ("RESET", 124.700, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp11"),
-    ("CLKIN", 130.500, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp12"),
-    ("CLKOUT", 143.500, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp13"),
-    ("IRQ0", 149.300, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp5"),
-    ("IRQ1", 153.400, 113.850, 0, "B.SilkS", 0.8, 0.2, "tp6"),
-    ("CF1", 126.900, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp7"),
-    ("CF2", 131.100, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp8"),
-    ("CF3/ZX", 143.000, 119.250, 0, "B.SilkS", 0.8, 0.2, "tp9"),
-    ("DRDY", 151.500, 119.950, 0, "B.SilkS", 0.8, 0.2, "tp10"),
+    ("3V3", 180.700, 86.100, 0, "F.SilkS", 0.6, 0.15, "pin1"),
+    ("GND", 180.700, 88.640, 0, "F.SilkS", 0.6, 0.15, "pin2"),
+    ("SS", 180.700, 91.180, 0, "F.SilkS", 0.6, 0.15, "pin3"),
+    ("MOSI", 180.700, 93.720, 0, "F.SilkS", 0.6, 0.15, "pin4"),
+    ("MISO", 180.700, 96.260, 0, "F.SilkS", 0.6, 0.15, "pin5"),
+    ("SCLK", 180.700, 98.800, 0, "F.SilkS", 0.6, 0.15, "pin6"),
+    ("IRQ0", 180.700, 101.340, 0, "F.SilkS", 0.6, 0.15, "pin7"),
+    ("IRQ1", 180.700, 103.880, 0, "F.SilkS", 0.6, 0.15, "pin8"),
+    ("CF1", 180.700, 106.420, 0, "F.SilkS", 0.6, 0.15, "pin9"),
+    ("CF2", 180.700, 108.960, 0, "F.SilkS", 0.6, 0.15, "pin10"),
+    ("CF3", 180.700, 111.500, 0, "F.SilkS", 0.6, 0.15, "pin11"),
+    ("DRDY", 180.700, 114.040, 0, "F.SilkS", 0.6, 0.15, "pin12"),
+    ("RST", 180.700, 116.580, 0, "F.SilkS", 0.6, 0.15, "pin13"),
+    ("CLKI", 180.700, 119.120, 0, "F.SilkS", 0.6, 0.15, "pin14"),
+    ("CLKO", 180.700, 121.660, 0, "F.SilkS", 0.6, 0.15, "pin15"),
+    ("GND", 180.700, 124.200, 0, "F.SilkS", 0.6, 0.15, "pin16"),
+    ("CTA", 126.000, 88.000, 90, "F.SilkS", 0.8, 0.2, "cta"),
+    ("CTB", 126.000, 101.000, 90, "F.SilkS", 0.8, 0.2, "ctb"),
+    ("CTC", 126.000, 114.000, 90, "F.SilkS", 0.8, 0.2, "ctc"),
+    ("CTN", 126.000, 127.000, 90, "F.SilkS", 0.8, 0.2, "ctn"),
+    ("VA", 154.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "va"),
+    ("VB", 162.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vb"),
+    ("VC", 170.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vc"),
+    ("DIGITAL", 183.500, 82.600, 0, "F.SilkS", 0.8, 0.2, "digital"),
 ]
-LEGACY_SIGNAL_TEXTS = ["DREADY"]
+LEGACY_SIGNAL_TEXTS = ["DREADY", "SPI", "RESET", "CLKIN", "CLKOUT", "CF3/ZX"]
 
 
 def escape_gr_text(value: str) -> str:
@@ -117,7 +125,7 @@ def oshw_logo_block() -> str:
         raise ValueError("could not find V9261F OSHW logo footprint")
     end = find_block_end(source, start)
     text = source[start:end]
-    text = text.replace('(at 150.495 87.376 180)', '(at 139.850 90.300 180)', 1)
+    text = text.replace('(at 150.495 87.376 180)', '(at 136.000 108.000 180)', 1)
     return "\t" + text.strip().replace("\n  ", "\n\t").rstrip() + "\n"
 
 
@@ -133,8 +141,8 @@ def apply_markings_text(board_text: str) -> str:
         board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(value))
 
     blocks = [
-        gr_text_block(FRONT_TITLE, 122.350, 96.400, 90, "F.SilkS", 0.8, 0.2, "26f5e411-5570-4436-91db-a9e900010002"),
-        gr_text_block(BACK_ATTRIBUTION, 139.850, 86.500, 0, "B.SilkS", 0.8, 0.2, "a7fc7aca-9271-4c6a-98dc-a9e900010003", justify="bottom mirror", bold=True),
+        gr_text_block(FRONT_TITLE, 156.000, 82.100, 0, "F.SilkS", 0.8, 0.2, "26f5e411-5570-4436-91db-a9e900010002"),
+        gr_text_block(BACK_ATTRIBUTION, 156.000, 84.500, 0, "B.SilkS", 0.8, 0.2, "a7fc7aca-9271-4c6a-98dc-a9e900010003", justify="bottom mirror", bold=True),
         oshw_logo_block(),
     ]
     for value, x, y, angle, layer, size, thickness, name in SIGNAL_TEXTS:

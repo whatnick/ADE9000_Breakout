@@ -11,9 +11,9 @@ from move_refs_to_silkscreen import place_references
 
 CORNER_RADIUS_MM = 5.08
 MOUNTING_HOLE_DRILL_MM = 2.2
-MOUNTING_HOLE_INSET_MM = 3.4
+MOUNTING_HOLE_INSET_MM = 3.5
 EDGE_WIDTH_MM = 0.1
-ADE9000_BOARD_BBOX = (120.835, 82.423, 158.935, 120.423)
+ADE9000_BOARD_BBOX = (123.501, 80.004, 188.501, 135.004)
 
 def to_coord(x_mm: float, y_mm: float) -> pcbnew.VECTOR2I:
     return pcbnew.VECTOR2I(pcbnew.FromMM(x_mm), pcbnew.FromMM(y_mm))
@@ -128,10 +128,10 @@ def add_mounting_hole(board: pcbnew.BOARD, reference: str, x_mm: float, y_mm: fl
 def add_mounting_holes(board: pcbnew.BOARD, bbox: tuple[float, float, float, float]) -> None:
     left, top, right, bottom = bbox
     positions = [
-        ("H1", left + MOUNTING_HOLE_INSET_MM, top + 2.577),
-        ("H2", right - MOUNTING_HOLE_INSET_MM, top + 2.577),
-        ("H3", left + MOUNTING_HOLE_INSET_MM, bottom - 1.713),
-        ("H4", right - 3.135, bottom - 1.813),
+        ("H1", left + 17.5, top + MOUNTING_HOLE_INSET_MM),
+        ("H2", right - 7.5, top + MOUNTING_HOLE_INSET_MM),
+        ("H3", left + 21.5, bottom - MOUNTING_HOLE_INSET_MM),
+        ("H4", right - 7.5, bottom - MOUNTING_HOLE_INSET_MM),
     ]
 
     for reference, x_mm, y_mm in positions:
