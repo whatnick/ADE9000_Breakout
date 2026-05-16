@@ -1,49 +1,113 @@
-# ADE9000 Breakout Schematic Skill
+---
+name: ade9000-breakout
+description: "Use when: making ADE9000_Breakout-specific schematic, PCB, routing, validation, or script changes. Layer this project overlay on top of the whatnick energy-monitor circuit-design, layout-design, routing, and pcb-size-shape skills. Covers ADE9000 Figure 55, KiCad 10 commands, local scripts, current ATM-style board facts, and known MCP/KiCad pitfalls."
+argument-hint: "ADE9000 schematic, PCB, routing, or validation task"
+---
 
-Use this skill when editing or regenerating the ADE9000 breakout schematic with the KiCad MCP server.
+# ADE9000 Breakout Project Overlay
 
-## Goal
+Use this skill for ADE9000_Breakout-specific facts. For reusable design principles, also load the relevant topic skill:
 
-Maintain a compact ADE9000 breakout that is electrically correct in KiCad 10:
-- analog inputs on 0.1 inch headers
-- `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK` on `J1` 6-pin JST-SH
-- CF, IRQ, CLK, and RESET debug signals on named test pads
-- datasheet Figure 55 support circuitry populated
+- Circuit/schematic work: `whatnick-energy-monitor-circuit-design`
+- Component placement and silkscreen: `whatnick-energy-monitor-layout-design`
+- Routing, GND planes, netclasses, and DRC: `whatnick-energy-monitor-routing`
+- Board envelope, mounting holes, and connector edge plan: `whatnick-energy-monitor-pcb-size-shape`
 
-## Validated workflow
+## Current Board Intent
 
-1. Inspect actual symbol pin locations before assigning nets.
-2. For U1 and all passives/connectors/test pads, connect by exact pin endpoint.
-3. Prefer the MCP `connect_to_net` flow.
-4. If scripting raw MCP calls, create connectivity as:
-   - short wire stub from the pin endpoint
-   - net label at the stub end
-5. Add `no_connect` only to intentionally unused pins.
-6. Run KiCad ERC immediately after rewiring.
+The current board is an ATM90E36-style ADE9000 bench breakout, not the older tiny header-only board.
 
-## Important project facts
+- Board envelope: 65 mm x 55 mm with rounded corners and four M2 NPTH mounting holes.
+- Current inputs: stereo jack style connectors, with YHDC current-output clamp support.
+- Voltage inputs: screw terminals.
+- Digital/debug signals: aggregated on one side for breadboard/logical analyzer access.
+- GND planes: filled on F.Cu and B.Cu.
+- Power routing: `+3V3`, `AVDDOUT`, and `DVDDOUT` use the `Power` netclass with 0.25 mm tracks and 0.50/0.25 mm vias.
 
+The previous compact/JST policy remains useful historical context:
+
+- Compact `J1`: 6-pin JST-SH for `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK`.
+- Compact `J2`/`J3`: analog current/voltage inputs.
+- Compact `TP5` through `TP13`: CF, IRQ, clock, and reset signals on the lower board edge.
+- Do not recreate obsolete compact `TP1` through `TP4` unless intentionally reverting to the older topology.
+
+## Circuit Facts
+
+- Follow the ADE9000 datasheet Figure 55 support circuit unless the user explicitly changes topology.
 - `ADE9000_Breakout.kicad_sym` is the authoritative source for custom symbol geometry.
 - The ADE9000 exposed-pad pin number is `EP`.
-- The earlier failure mode in this project was label-only connectivity: it looked connected but left passive pins electrically open in ERC.
-- The corrected wiring pattern removed all ERC errors.
+- Anti-alias filters use 1 k series resistors and 22 nF shunt capacitors on analog input paths.
+- VDD, AVDDOUT, DVDDOUT, and REF need local decoupling near U1.
+- Clock uses a 24.576 MHz crystal with load capacitors unless using an external clock.
+- PM0/PM1 are grounded for normal operating mode.
+- YHDC current-output clamp support uses R17-R20, 2.4R 0402 burden/multiplier resistors across the jack-side current pairs.
 
-## ERC interpretation
+## Schematic Generation Rules
+
+- Inspect actual symbol pin locations before assigning nets.
+- For U1 and all passives/connectors/test pads, connect by exact pin endpoint.
+- Prefer MCP `connect_to_net` when it uses the exact pin endpoint.
+- If scripting raw connectivity, use pin endpoint -> short wire stub -> net label at the stub end.
+- Do not use label-only connectivity on passive pins; it looked connected but left pins ERC-open in this project.
+- Add `no_connect` only to intentionally unused pins.
+- Run KiCad ERC immediately after rewiring.
+
+ERC interpretation:
 
 - `pin_not_connected` means the generator failed electrically.
 - `multiple_net_names` usually means two labeled stubs were accidentally merged.
-- `endpoint_off_grid` is a placement/grid hygiene issue; fix component placement before reworking net connectivity.
+- `endpoint_off_grid` is placement/grid hygiene; fix grid/placement before reworking proven connectivity.
 
-## Compact breakout rules
+## PCB Script Flow
 
-- Keep `J1` as `Connector_JST:JST_SHL_SM06B-SHLS-TF_1x06-1MP_P1.00mm_Horizontal` with pinout `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, `SCLK`.
-- Keep `J2` and `J3` for analog current/voltage inputs.
-- Keep `IRQ0`, `IRQ1`, `CF1`, `CF2`, `CF3_ZX`, `CF4_DREADY`, `RESET`, `CLKIN`, and `CLKOUT` on `TP5` through `TP13`.
-- Do not recreate obsolete `TP1` through `TP4`; those SPI signals now live on `J1`.
-- For the PCB, place `TP5` through `TP13` on the lower board edge before routing. The older mid-board TP cluster blocks JST/SPI fanout.
+Primary scripts:
 
-## Canonical validation command
+- `scripts/rewire_schematic.py`: deterministic schematic regeneration.
+- `scripts/place_pcb.py`: deterministic footprint/net assignment and placement.
+- `scripts/apply_mechanical.py`: rounded outline, M2 holes, and board markings.
+- `scripts/move_refs_to_silkscreen.py`: visible reference designators on matching silkscreen layers.
+- `scripts/clear_routes_text.py`: remove old `(segment ...)` and `(via ...)` blocks before rerouting.
+- `scripts/clear_zones_text.py`: remove old `(zone ...)` blocks before rerouting.
+- `scripts/apply_power_planes.py`: add F.Cu/B.Cu GND planes and enforce thicker power copper.
 
-`& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" sch erc --format json --output "c:\Users\tisha\dev\ADE9000_Breakout\erc.json" "c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_sch"`
+Run scripts with KiCad 10 Python:
 
-Expected final schematic state: zero ERC errors. Existing warnings are placement/grid hygiene, not connectivity failures.
+```powershell
+& "C:\Program Files\KiCad\10.0\bin\python.exe" .\scripts\place_pcb.py
+```
+
+PowerShell note: use semicolons for command chaining and avoid bash heredocs.
+
+## Routing Facts
+
+- Clear stale routes and zones before a fresh autoroute.
+- Export fresh DSN with KiCad Python `pcbnew.ExportSpecctraDSN`; avoid stale MCP DSN export state.
+- Route with the `Power` netclass already present in `.kicad_pro`; post-widening already-routed 0.15 mm power tracks caused clearance errors.
+- Use GND planes instead of widening every GND trace.
+- For KiCad 10 vias, avoid `PCB_VIA.GetWidth()` without layer context; use `GetFrontWidth()` or set width directly.
+- `scripts/apply_power_planes.py` uses solid GND zone connections to avoid a starved thermal on U1 pad 28.
+
+Installed Freerouting context:
+
+- Router jar: `C:/Users/tisha/AppData/Roaming/kicad/10.0/freerouting/freerouting.jar`
+- JRE 25: `C:/Users/tisha/AppData/Roaming/kicad/10.0/freerouting/jre/jdk-25.0.3+9-jre/bin/java.exe`
+
+## Validation Commands
+
+ERC:
+
+```powershell
+& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" sch erc --format json --output erc.json .\ADE9000_Breakout.kicad_sch
+```
+
+DRC:
+
+```powershell
+& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" pcb drc --format json --output drc.json .\ADE9000_Breakout.kicad_pcb
+```
+
+Expected final PCB state:
+
+- Zero DRC errors.
+- Zero unconnected items.
+- Remaining warnings are known library/text/silkscreen warnings unless the task is specifically to eliminate them.

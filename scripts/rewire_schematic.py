@@ -24,6 +24,8 @@ FILTER_R_X = 82.0
 FILTER_C_X = 102.0
 FILTER_INPUT_LABEL_X = 62.0
 FILTER_OUTPUT_LABEL_X = 98.0
+BURDEN_R_X = 52.0
+BURDEN_LABEL_X = 46.0
 DIGITAL_HEADER_NETS = [
     "+3V3",
     "GND",
@@ -70,6 +72,13 @@ FILTER_ROWS = [
     ("R12", "C22", "VBN_J", "VBN", 152.5),
     ("R15", "C25", "VCP_J", "VCP", 161.0),
     ("R14", "C24", "VCN_J", "VCN", 169.5),
+]
+
+YHDC_BURDEN_ROWS = [
+    ("R17", "IAP_J", "IAN_J", 54.25),
+    ("R18", "IBP_J", "IBN_J", 71.25),
+    ("R19", "ICP_J", "ICN_J", 88.25),
+    ("R20", "INP_J", "INN_J", 105.25),
 ]
 
 
@@ -188,6 +197,26 @@ def ensure_connector_symbol(
     set_property(existing, "Footprint", footprint)
 
 
+def ensure_resistor_symbol(data: list, symbols: list, ref: str, value: str, template_ref: str = "R2") -> None:
+    existing = next((symbol for symbol in symbols if component_ref(symbol) == ref), None)
+    if existing is None:
+        template = next((symbol for symbol in symbols if component_ref(symbol) == template_ref), None)
+        if template is None:
+            return
+        existing = copy.deepcopy(template)
+        old_ref = component_ref(existing)
+        if old_ref is not None:
+            replace_string(existing, old_ref, ref)
+        refresh_uuids(existing)
+        data.insert(-2, existing)
+        symbols.append(existing)
+
+    set_lib_id(existing, "Device:R")
+    set_property(existing, "Reference", ref)
+    set_property(existing, "Value", value)
+    set_property(existing, "Footprint", "Resistor_SMD:R_0402_1005Metric")
+
+
 def normalize_debug_symbols(data: list) -> None:
     symbols = [
         item
@@ -241,6 +270,8 @@ def normalize_debug_symbols(data: list) -> None:
             "TerminalBlock_4Ucon:TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal",
             "J3",
         )
+    for ref, *_rest in YHDC_BURDEN_ROWS:
+        ensure_resistor_symbol(data, symbols, ref, "2.4R")
 
 
 def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
@@ -258,6 +289,8 @@ def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
 
 def layout_components() -> None:
     poses: dict[str, tuple[float, float, float]] = dict(COMPONENT_POSES)
+    for ref, *_nets, row_y in YHDC_BURDEN_ROWS:
+        poses[ref] = (BURDEN_R_X, row_y, 0.0)
     for ref_r, ref_c, *_rest, row_y in FILTER_ROWS:
         poses[ref_r] = (FILTER_R_X, row_y, 90.0)
         poses[ref_c] = (FILTER_C_X, row_y + 3.81, 0.0)
@@ -440,6 +473,23 @@ def add_filter_row(ref_r: str, ref_c: str, external_net: str, ade_net: str, y: f
     return row_errors
 
 
+def add_yhdc_burden_row(ref_r: str, positive_net: str, negative_net: str, y: float) -> int:
+    row_errors = 0
+    r_x = BURDEN_R_X
+    r_top = y - 3.81
+    r_bottom = y + 3.81
+
+    row_errors += report_pair(
+        f"{ref_r} top {positive_net}",
+        *connect_with_stub(positive_net, r_x, r_top, BURDEN_LABEL_X, r_top, 180),
+    )
+    row_errors += report_pair(
+        f"{ref_r} bottom {negative_net}",
+        *connect_with_stub(negative_net, r_x, r_bottom, BURDEN_LABEL_X, r_bottom, 180),
+    )
+    return row_errors
+
+
 def report_pair(name: str, wire: dict, label: dict) -> int:
     if wire.get("success") and label.get("success"):
         print(f"  ✓ {name}")
@@ -529,6 +579,8 @@ for ref in [
     *(f"R{index}" for index in range(2, 16)),
 ]:
     errors += report_single(f"{ref} rotate 90", rotate_component(ref, 90))
+for ref, *_rest in YHDC_BURDEN_ROWS:
+    errors += report_single(f"{ref} rotate 0", rotate_component(ref, 0))
 
 print()
 print("--- U1 Left Side ---")
@@ -607,6 +659,11 @@ for ref, nets in VOLTAGE_TERMINAL_NETS.items():
 
 for flag_ref, flag_net in [("#FLG3", "SS"), ("#FLG4", "MOSI"), ("#FLG5", "SCLK")]:
     errors += report_single(f"{flag_ref} {flag_net}", connect_pin(flag_ref, "1", flag_net))
+
+print()
+print("--- YHDC CT Burden/Multiplier Resistors ---")
+for row in YHDC_BURDEN_ROWS:
+    errors += add_yhdc_burden_row(*row)
 
 print()
 print("--- AA Input Filters ---")

@@ -17,6 +17,8 @@ TERMINAL_LIB = KICAD_FOOTPRINTS / "TerminalBlock_4Ucon.pretty"
 TERMINAL_NAME = "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal"
 HEADER_LIB = KICAD_FOOTPRINTS / "Connector_PinHeader_2.54mm.pretty"
 HEADER_NAME = "PinHeader_1x16_P2.54mm_Vertical"
+RESISTOR_LIB = KICAD_FOOTPRINTS / "Resistor_SMD.pretty"
+RESISTOR_NAME = "R_0402_1005Metric"
 FOOTPRINT_PLUGIN = pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.KICAD_SEXP)
 FOOTPRINT_PROTOTYPES: dict[tuple[str, str], pcbnew.FOOTPRINT] = {}
 
@@ -54,6 +56,13 @@ CURRENT_JACK_NETS = {
     "CTB1": {"T": "IBP_J", "S": "IBN_J", "R": "GND"},
     "CTC1": {"T": "ICP_J", "S": "ICN_J", "R": "GND"},
     "CTN1": {"T": "INP_J", "S": "INN_J", "R": "GND"},
+}
+
+YHDC_BURDEN_RESISTOR_NETS = {
+    "R17": {"1": "IAP_J", "2": "IAN_J"},
+    "R18": {"1": "IBP_J", "2": "IBN_J"},
+    "R19": {"1": "ICP_J", "2": "ICN_J"},
+    "R20": {"1": "INP_J", "2": "INN_J"},
 }
 
 VOLTAGE_TERMINAL_NETS = {
@@ -127,6 +136,7 @@ for preload_lib, preload_name in [
     (AUDIO_LIB, AUDIO_NAME),
     (TERMINAL_LIB, TERMINAL_NAME),
     (HEADER_LIB, HEADER_NAME),
+    (RESISTOR_LIB, RESISTOR_NAME),
 ]:
     load_footprint(preload_lib, preload_name)
 
@@ -306,14 +316,23 @@ def ensure_external_connectors(board: pcbnew.BOARD) -> None:
         ensure_footprint(board, ref, "Voltage", TERMINAL_LIB, TERMINAL_NAME, net_map)
 
 
+def ensure_yhdc_burden_resistors(board: pcbnew.BOARD) -> None:
+    for ref, net_map in YHDC_BURDEN_RESISTOR_NETS.items():
+        ensure_footprint(board, ref, "2.4R", RESISTOR_LIB, RESISTOR_NAME, net_map)
+
+
 def place_all(board: pcbnew.BOARD) -> None:
     add_u1_if_missing(board)
     ensure_external_connectors(board)
+    ensure_yhdc_burden_resistors(board)
 
     place(board, "U1", 158.500, 104.000, 0)
 
     for ref, y in [("CTA1", 88.000), ("CTB1", 101.000), ("CTC1", 114.000), ("CTN1", 127.000)]:
         place(board, ref, 129.500, y, 90)
+
+    for ref, y in [("R17", 90.000), ("R18", 103.000), ("R19", 116.000), ("R20", 129.000)]:
+        place(board, ref, 140.000, y, 90)
 
     for ref, x in [("J2", 154.000), ("J3", 162.000), ("J4", 170.000)]:
         place(board, ref, x, 131.250, 0)
@@ -363,6 +382,10 @@ def place_all(board: pcbnew.BOARD) -> None:
         ("CTB1", 124.600, 101.000, 90),
         ("CTC1", 124.600, 114.000, 90),
         ("CTN1", 124.600, 127.000, 90),
+        ("R17", 138.000, 90.000, 0),
+        ("R18", 138.000, 103.000, 0),
+        ("R19", 138.000, 116.000, 0),
+        ("R20", 138.000, 129.000, 0),
         ("R1", 152.800, 111.500, 0),
         ("C11", 157.000, 113.300, 0),
         ("Y1", 172.800, 104.000, 90),
