@@ -8,7 +8,10 @@ PCB_PATH = ROOT / "ADE9000_Breakout.kicad_pcb"
 V9261F_BOARD_PATH = Path(r"C:\Users\tisha\dev\V9261F_Breakout\V9261F_Breakout.kicad_pcb")
 
 FRONT_TITLE = "ADE9000 Breakout"
-BACK_ATTRIBUTION = "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026"
+BACK_ATTRIBUTION = "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026\nTAPR OHL"
+LEGACY_BACK_ATTRIBUTIONS = [
+    "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026",
+]
 LOGO_REF = "LOGO1"
 SIGNAL_TEXTS = [
     ("3V3", 180.700, 86.100, 0, "F.SilkS", 0.6, 0.15, "pin1"),
@@ -134,6 +137,9 @@ def apply_markings_text(board_text: str) -> str:
     board_text = remove_blocks(board_text, "\t(gr_text", BACK_ATTRIBUTION)
     board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(FRONT_TITLE))
     board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(BACK_ATTRIBUTION))
+    for legacy_attribution in LEGACY_BACK_ATTRIBUTIONS:
+        board_text = remove_blocks(board_text, "\t(gr_text", legacy_attribution)
+        board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(legacy_attribution))
     board_text = remove_blocks(board_text, "\t(footprint", LOGO_REF)
     board_text = remove_blocks(board_text, "\t(footprint", "OSHW-LOGO")
     for value in [entry[0] for entry in SIGNAL_TEXTS] + LEGACY_SIGNAL_TEXTS:
@@ -142,7 +148,7 @@ def apply_markings_text(board_text: str) -> str:
 
     blocks = [
         gr_text_block(FRONT_TITLE, 156.000, 82.100, 0, "F.SilkS", 0.8, 0.2, "26f5e411-5570-4436-91db-a9e900010002"),
-        gr_text_block(BACK_ATTRIBUTION, 156.000, 84.500, 0, "B.SilkS", 0.8, 0.2, "a7fc7aca-9271-4c6a-98dc-a9e900010003", justify="bottom mirror", bold=True),
+        gr_text_block(BACK_ATTRIBUTION, 156.000, 88.000, 0, "B.SilkS", 0.8, 0.2, "a7fc7aca-9271-4c6a-98dc-a9e900010003", justify="bottom mirror", bold=True),
         oshw_logo_block(),
     ]
     for value, x, y, angle, layer, size, thickness, name in SIGNAL_TEXTS:

@@ -163,3 +163,9 @@ The KiCad schematic (`ADE9000_Breakout.kicad_sch`) implements Figure 55 of the d
 | ADE9000 Technical Reference Manual (UG-1098) | https://www.analog.com/media/en/technical-documentation/user-guides/ADE9000-UG-1098.pdf |
 | Arduino Shield Eval (UG-1170) | https://www.analog.com/media/en/technical-documentation/user-guides/ev-ade9000shieldz-ug-1170.pdf |
 | no-OS Driver | https://github.com/analogdevicesinc/no-OS/tree/main/drivers/meter/ade9000 |
+
+---
+
+## License
+
+This hardware design is released under the [TAPR Open Hardware License v1.0](LICENSE). The PCB artwork includes a `TAPR OHL` notice on the back silkscreen.
