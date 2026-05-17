@@ -76,13 +76,6 @@ def color_for_face(face):
     return (0.005, 0.005, 0.005)
 
 
-def make_contact(doc, name, x, y, sx, sy):
-    shape = Part.makeBox(sx, sy, 0.24, FreeCAD.Vector(x - sx / 2.0, y - sy / 2.0, 0.02))
-    obj = doc.addObject("Part::Feature", name)
-    obj.Shape = shape
-    return obj
-
-
 if not SOURCE_ZIP.exists():
     raise FileNotFoundError(f"Missing manufacturer CAD ZIP: {SOURCE_ZIP}")
 
@@ -110,18 +103,10 @@ with tempfile.TemporaryDirectory() as tmpdir:
     doc.removeObject(source.Name)
     obj = doc.addObject("Part::Feature", "SJ-3523-SMT-TR_manufacturer_cad")
     obj.Shape = shape
-    contact_objs = [
-        make_contact(doc, "R_pad_contact", 3.7, -1.6, 1.8, 1.0),
-        make_contact(doc, "S_pad_contact", -3.7, -3.6, 1.8, 1.0),
-        make_contact(doc, "T_pad_contact", -3.7, 5.8, 1.9, 1.5),
-    ]
     doc.recompute()
 
-    export_objects = [obj] + contact_objs
     face_colors = [color_for_face(face) for face in obj.Shape.Faces]
-    for contact_obj in contact_objs:
-        face_colors.extend((0.86, 0.72, 0.35) for _ in contact_obj.Shape.Faces)
-    Part.export(export_objects, str(OUT))
+    Part.export([obj], str(OUT))
 
 add_step_presentation(OUT, face_colors)
 print(OUT)
