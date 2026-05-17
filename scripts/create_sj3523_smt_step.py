@@ -69,15 +69,18 @@ def add_step_presentation(path, face_colors):
 
 def color_for_face(face):
     bb = face.BoundBox
-    x_center = (bb.XMin + bb.XMax) / 2.0
     y_center = (bb.YMin + bb.YMax) / 2.0
 
-    # The transformed manufacturer contacts land on the official R/S/T SMT pads.
-    if bb.ZMax <= 0.55 and abs(x_center) > 2.4:
-        return (0.86, 0.72, 0.35)
-    if y_center < -6.0 and bb.ZMin > 0.2:
+    if y_center > 6.0 and bb.ZMin > 0.2:
         return (0.66, 0.66, 0.62)
     return (0.005, 0.005, 0.005)
+
+
+def make_contact(doc, name, x, y, sx, sy):
+    shape = Part.makeBox(sx, sy, 0.24, FreeCAD.Vector(x - sx / 2.0, y - sy / 2.0, 0.02))
+    obj = doc.addObject("Part::Feature", name)
+    obj.Shape = shape
+    return obj
 
 
 if not SOURCE_ZIP.exists():
@@ -94,12 +97,12 @@ with tempfile.TemporaryDirectory() as tmpdir:
 
     source = doc.Objects[0]
     # Native Same Sky CAD: X is across the jack, Y is vertical, Z is along insertion.
-    # KiCad footprint frame: X across, Y along body, Z above PCB. This transform maps
-    # the metal contacts to R=(3.7,-1.6), S=(-3.7,-3.6), T=(-3.7,5.8) and the pegs to
-    # (0,-2.5)/(0,4.5), matching the official KiCad footprint.
+    # KiCad footprint frame: X across, Y along body, Z above PCB. This transform keeps
+    # the front barrel on the footprint's +Y edge, which faces the ADE9000 board edge
+    # when the jack footprints are placed at 90 degrees.
     transform = FreeCAD.Matrix(
         -1, 0, 0, 0,
-        0, 0, -1, -6,
+        0, 0, 1, 6,
         0, 1, 0, 2.6,
         0, 0, 0, 1,
     )
@@ -107,10 +110,18 @@ with tempfile.TemporaryDirectory() as tmpdir:
     doc.removeObject(source.Name)
     obj = doc.addObject("Part::Feature", "SJ-3523-SMT-TR_manufacturer_cad")
     obj.Shape = shape
+    contact_objs = [
+        make_contact(doc, "R_pad_contact", 3.7, -1.6, 1.8, 1.0),
+        make_contact(doc, "S_pad_contact", -3.7, -3.6, 1.8, 1.0),
+        make_contact(doc, "T_pad_contact", -3.7, 5.8, 1.9, 1.5),
+    ]
     doc.recompute()
 
+    export_objects = [obj] + contact_objs
     face_colors = [color_for_face(face) for face in obj.Shape.Faces]
-    Part.export([obj], str(OUT))
+    for contact_obj in contact_objs:
+        face_colors.extend((0.86, 0.72, 0.35) for _ in contact_obj.Shape.Faces)
+    Part.export(export_objects, str(OUT))
 
 add_step_presentation(OUT, face_colors)
 print(OUT)
