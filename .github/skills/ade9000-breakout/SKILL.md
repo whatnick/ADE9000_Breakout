@@ -12,6 +12,7 @@ Use this skill for ADE9000_Breakout-specific facts. For reusable design principl
 - Component placement and silkscreen: `whatnick-energy-monitor-layout-design`
 - Routing, GND planes, netclasses, and DRC: `whatnick-energy-monitor-routing`
 - Board envelope, mounting holes, and connector edge plan: `whatnick-energy-monitor-pcb-size-shape`
+- 3D model placement and STEP export: `whatnick-energy-monitor-layout-design`
 
 ## Current Board Intent
 
@@ -23,6 +24,8 @@ The current board is an ATM90E36-style ADE9000 bench breakout, not the older tin
 - Digital/debug signals: aggregated on one side for breadboard/logical analyzer access.
 - GND planes: filled on F.Cu and B.Cu.
 - Power routing: `+3V3`, `AVDDOUT`, and `DVDDOUT` use the `Power` netclass with 0.25 mm tracks and 0.50/0.25 mm vias.
+- 3D CAD: populated parts use project-local STEP models under `models/step/`; full assembly export lives at `exports/step/ADE9000_Breakout.step`.
+- The CT jack STEP model must match the SMT `Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal` footprint; do not substitute the through-hole `SJ1-3523N` model.
 
 The previous compact/JST policy remains useful historical context:
 
@@ -93,6 +96,12 @@ Installed Freerouting context:
 - JRE 25: `C:/Users/tisha/AppData/Roaming/kicad/10.0/freerouting/jre/jdk-25.0.3+9-jre/bin/java.exe`
 
 ## Validation Commands
+
+STEP export:
+
+```powershell
+& "C:\Program Files\KiCad\10.0\bin\kicad-cli.exe" pcb export step --force --subst-models --output exports\step\ADE9000_Breakout.step .\ADE9000_Breakout.kicad_pcb
+```
 
 ERC:
 

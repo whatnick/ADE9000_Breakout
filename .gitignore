@@ -40,6 +40,15 @@ fab/
 !docs/**/*.png
 !docs/**/*.svg
 
+# Project-local 3D CAD assets
+!models/
+!models/step/
+!models/step/*.step
+!models/step/*.zip
+!exports/
+!exports/step/
+!exports/step/*.step
+
 # Python cache (for KiCad scripting)
 __pycache__/
 *.pyc
