@@ -149,9 +149,6 @@ for index in range(17, 21):
     }
 
 
-PROPERTY_RE = re.compile(r'\(property "(?P<name>[^"\\]*(?:\\.[^"\\]*)*)" "(?P<value>[^"\\]*(?:\\.[^"\\]*)*)"(?P<rest> [^()]*(?:\([^()]*\)[^()]*)*)\)')
-
-
 def escape(value: str) -> str:
     return value.replace('\\', '\\\\').replace('"', '\\"')
 
@@ -179,11 +176,36 @@ def property_value(block: str, name: str) -> str | None:
     return match.group(1) if match else None
 
 
+def property_span(block: str, name: str) -> tuple[int, int, str] | None:
+    start = block.find(f'(property "{name}" ')
+    if start < 0:
+        return None
+
+    depth = 0
+    for end in range(start, len(block)):
+        if block[end] == "(":
+            depth += 1
+        elif block[end] == ")":
+            depth -= 1
+            if depth == 0:
+                return start, end + 1, block[start : end + 1]
+
+    raise ValueError(f"Unterminated property {name}")
+
+
+def property_rest(property_text: str) -> str:
+    match = re.match(r'\(property "(?:[^"\\]|\\.)*" "(?:[^"\\]|\\.)*"(?P<rest>.*)\)$', property_text)
+    if not match:
+        raise ValueError(f"Unable to parse property text: {property_text}")
+    return match.group("rest")
+
+
 def upsert_property(block: str, name: str, value: str, template_rest: str) -> str:
-    pattern = re.compile(r'\(property "' + re.escape(name) + r'" "(?:[^"\\]|\\.)*"(?P<rest> [^()]*(?:\([^()]*\)[^()]*)*)\)')
     replacement = f'(property "{escape(name)}" "{escape(value)}"{template_rest})'
-    if pattern.search(block):
-        return pattern.sub(replacement, block, count=1)
+    span = property_span(block, name)
+    if span:
+        start, end, _property_text = span
+        return block[:start] + replacement + block[end:]
     return block.replace("(instances ", replacement + " (instances ", 1)
 
 
@@ -197,8 +219,8 @@ def main() -> None:
         if not ref or ref not in BOM_FIELDS:
             continue
 
-        footprint_match = re.search(r'\(property "Footprint" "(?:[^"\\]|\\.)*"(?P<rest> [^()]*(?:\([^()]*\)[^()]*)*)\)', block)
-        template_rest = footprint_match.group("rest") if footprint_match else ' (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))'
+        footprint_property = property_span(block, "Footprint")
+        template_rest = property_rest(footprint_property[2]) if footprint_property else ' (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes))'
 
         new_block = block
         for field, value in BOM_FIELDS[ref].items():

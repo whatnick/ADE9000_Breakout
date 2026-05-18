@@ -151,8 +151,14 @@ def sheet_xml(rows: list[dict[str, str]]) -> str:
 
 def write_xlsx(rows: list[dict[str, str]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+
+    def writestr(name: str, data: str) -> None:
+        info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
+        info.compress_type = zipfile.ZIP_DEFLATED
+        xlsx.writestr(info, data)
+
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as xlsx:
-        xlsx.writestr(
+        writestr(
             "[Content_Types].xml",
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
@@ -162,28 +168,28 @@ def write_xlsx(rows: list[dict[str, str]], path: Path) -> None:
             '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
             '</Types>',
         )
-        xlsx.writestr(
+        writestr(
             "_rels/.rels",
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
             '</Relationships>',
         )
-        xlsx.writestr(
+        writestr(
             "xl/workbook.xml",
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
             'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             '<sheets><sheet name="BOM" sheetId="1" r:id="rId1"/></sheets></workbook>',
         )
-        xlsx.writestr(
+        writestr(
             "xl/_rels/workbook.xml.rels",
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'
             '</Relationships>',
         )
-        xlsx.writestr("xl/worksheets/sheet1.xml", sheet_xml(rows))
+        writestr("xl/worksheets/sheet1.xml", sheet_xml(rows))
 
 
 def write_html_preview(rows: list[dict[str, str]], path: Path) -> None:
