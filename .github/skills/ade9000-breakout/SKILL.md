@@ -22,7 +22,7 @@ The current board is an ATM90E36-style ADE9000 bench breakout, not the older tin
 - Board envelope: 65 mm x 55 mm with rounded corners and four M2 NPTH mounting holes.
 - Current inputs: stereo jack style connectors, with YHDC current-output clamp support.
 - Voltage inputs: screw terminals.
-- Voltage screw-terminal inputs are scaled for 12 VAC AC/AC transformer inputs using 100 kOhm high-side divider resistors and 2.49 kOhm shunts before the existing 1 k / 22 nF ADE9000 anti-alias filters. The added divider resistors live on B.Cu to keep front silkscreen readable.
+- Voltage screw-terminal inputs are scaled for 12 VAC AC/AC transformer inputs using 100 kOhm high-side divider resistors and 2.49 kOhm shunts before the existing 1 k / 22 nF ADE9000 anti-alias filters. Keep SMD parts on F.Cu for easier hand soldering unless a specific assembly constraint overrides it.
 - Digital/debug signals: aggregated on one side for breadboard/logical analyzer access.
 - `J1` uses the project-local SparkFun `1x16_Locking` staggered/friction-fit footprint from `footprints/SparkFun-Connector.pretty`, placed at `(184.873, 86.1)` with -90 degree rotation so odd-numbered pads stay on the old `x=185.0` route centerline and pins 2-16 run downward.
 - GND planes: filled on F.Cu and B.Cu.

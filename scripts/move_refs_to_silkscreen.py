@@ -4,7 +4,7 @@ Mounting-hole references are intentionally hidden.
 """
 import pcbnew
 
-from apply_board_markings import strip_current_jack_silkscreen_text
+from apply_board_markings import strip_selected_footprint_silkscreen
 
 PCB_PATH = r"c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_pcb"
 
@@ -45,6 +45,7 @@ REFERENCE_PLACEMENTS = {
 for index in range(8):
     REFERENCE_PLACEMENTS[f"R{2 + index}"] = (141.300, 88.000 + index * 4.000, 0)
     REFERENCE_PLACEMENTS[f"C{12 + index}"] = (149.300, 88.000 + index * 4.000, 0)
+REFERENCE_PLACEMENTS["C19"] = (149.300, 113.500, 0)
 
 for index in range(6):
     REFERENCE_PLACEMENTS[f"R{10 + index}"] = (157.800, 116.000 + index * 2.200, 0)
@@ -98,7 +99,7 @@ def main() -> None:
     with open(PCB_PATH, encoding="utf-8") as board_file:
         board_text = board_file.read()
     with open(PCB_PATH, "w", encoding="utf-8", newline="") as board_file:
-        board_file.write(strip_current_jack_silkscreen_text(board_text))
+        board_file.write(strip_selected_footprint_silkscreen(board_text))
     print(f"\nDone. Moved {moved} reference layer(s), placed {placed} visible reference(s). Saved to {PCB_PATH}")
 
 

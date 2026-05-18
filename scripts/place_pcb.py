@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pcbnew
 
-from apply_board_markings import strip_current_jack_silkscreen_text
+from apply_board_markings import strip_selected_footprint_silkscreen
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -268,16 +268,6 @@ def place(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 0.0)
     fp.SetOrientationDegrees(angle)
 
 
-def place_bottom(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 0.0) -> None:
-    fp = footprint_by_ref(board, ref)
-    if fp is None:
-        return
-    if fp.GetLayer() != pcbnew.B_Cu:
-        fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
-    fp.SetPosition(vmm(x, y))
-    fp.SetOrientationDegrees(angle)
-
-
 def set_field_style(field: pcbnew.PCB_FIELD) -> None:
     field.SetTextSize(vmm(SILK_TEXT_SIZE, SILK_TEXT_SIZE))
     field.SetTextThickness(pcbnew.FromMM(SILK_TEXT_THICKNESS))
@@ -413,8 +403,8 @@ def place_all(board: pcbnew.BOARD) -> None:
     voltage_refs = [(10, 20), (11, 21), (12, 22), (13, 23), (14, 24), (15, 25)]
     for index, (resistor, cap) in enumerate(voltage_refs):
         y = 116.000 + index * 2.200
-        place_bottom(board, f"R{21 + index}", 150.200, y, 0)
-        place_bottom(board, f"R{27 + index}", 153.000, y, 0)
+        place(board, f"R{21 + index}", 150.200, y, 0)
+        place(board, f"R{27 + index}", 153.000, y, 0)
         place(board, f"R{resistor}", 160.000, y, 0)
         place(board, f"C{cap}", 163.000, y, 90)
 
@@ -488,7 +478,7 @@ def main() -> None:
     board = pcbnew.LoadBoard(str(BOARD_PATH))
     place_all(board)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
-    BOARD_PATH.write_text(strip_current_jack_silkscreen_text(BOARD_PATH.read_text(encoding="utf-8")), encoding="utf-8", newline="")
+    BOARD_PATH.write_text(strip_selected_footprint_silkscreen(BOARD_PATH.read_text(encoding="utf-8")), encoding="utf-8", newline="")
     print(f"Placed ADE9000 ATM-style PCB: {BOARD_WIDTH:.2f} mm x {BOARD_HEIGHT:.2f} mm")
 
 

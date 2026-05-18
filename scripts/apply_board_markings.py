@@ -14,6 +14,7 @@ LEGACY_BACK_ATTRIBUTIONS = [
 ]
 LOGO_REF = "LOGO1"
 CURRENT_JACK_REFS = {"CTA1", "CTB1", "CTC1", "CTN1"}
+STRIP_FOOTPRINT_SILK_REFS = CURRENT_JACK_REFS | {f"R{index}" for index in range(21, 33)}
 FOOTPRINT_GRAPHIC_BLOCKS = ("fp_line", "fp_arc", "fp_circle", "fp_poly", "fp_rect")
 SIGNAL_TEXTS = [
     ("3V3", 180.700, 86.100, 0, "F.SilkS", 0.8, 0.2, "pin1"),
@@ -36,7 +37,7 @@ SIGNAL_TEXTS = [
     ("CTB", 130.700, 101.000, 90, "F.SilkS", 0.8, 0.2, "ctb"),
     ("CTC", 130.700, 114.000, 90, "F.SilkS", 0.8, 0.2, "ctc"),
     ("CTN", 130.700, 127.000, 90, "F.SilkS", 0.8, 0.2, "ctn"),
-    ("VA", 154.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "va"),
+    ("VA", 157.000, 128.500, 0, "F.SilkS", 0.8, 0.2, "va"),
     ("VB", 162.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vb"),
     ("VC", 170.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vc"),
     ("VIN 12VAC MAX", 145.500, 133.400, 0, "F.SilkS", 0.8, 0.2, "vinmax"),
@@ -119,7 +120,7 @@ def remove_footprint_silk_graphics(block: str) -> str:
         cursor = end
 
 
-def strip_current_jack_silkscreen_text(board_text: str) -> str:
+def strip_selected_footprint_silkscreen(board_text: str) -> str:
     cursor = 0
     output: list[str] = []
 
@@ -132,7 +133,7 @@ def strip_current_jack_silkscreen_text(board_text: str) -> str:
         end = find_block_end(board_text, start)
         block = board_text[start:end]
         output.append(board_text[cursor:start])
-        if any(f'(property "Reference" "{ref}"' in block for ref in CURRENT_JACK_REFS):
+        if any(f'(property "Reference" "{ref}"' in block for ref in STRIP_FOOTPRINT_SILK_REFS):
             block = remove_footprint_silk_graphics(block)
         output.append(block)
         cursor = end
@@ -179,7 +180,7 @@ def oshw_logo_block() -> str:
 
 
 def apply_markings_text(board_text: str) -> str:
-    board_text = strip_current_jack_silkscreen_text(board_text)
+    board_text = strip_selected_footprint_silkscreen(board_text)
     board_text = remove_blocks(board_text, "\t(gr_text", FRONT_TITLE)
     board_text = remove_blocks(board_text, "\t(gr_text", BACK_ATTRIBUTION)
     board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(FRONT_TITLE))
