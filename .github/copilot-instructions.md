@@ -4,7 +4,7 @@ This repository is a KiCad 10 ADE9000 breakout board. Keep changes small, schema
 
 Project constraints:
 - Follow the ADE9000 datasheet Figure 55 test circuit.
-- The current board is an ATM90E36-style ADE9000 bench breakout: stereo current-input jacks, voltage screw terminals, grouped 0.1 inch digital/debug header, 65 mm x 55 mm rounded board, four M2 holes, and F.Cu/B.Cu GND planes.
+- The current board is an ATM90E36-style ADE9000 bench breakout: stereo current-input jacks, voltage screw terminals, grouped SparkFun staggered/friction-fit 0.1 inch digital/debug header, 65 mm x 55 mm rounded board, four M2 holes, and F.Cu/B.Cu GND planes.
 - The older compact revision used analog headers, a `J1` 6-pin JST-SH debug connector for `+3V3`, `GND`, `SS`, `MOSI`, `MISO`, and `SCLK`, and named bottom-side CF/IRQ/CLK/RESET test pads. Preserve this only when intentionally working on the compact topology.
 - Preserve the existing custom symbol and project-local library setup.
 

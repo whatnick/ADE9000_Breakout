@@ -247,7 +247,7 @@ def normalize_debug_symbols(data: list) -> None:
         "J1",
         "Digital breadboard",
         "Connector_Generic:Conn_01x16",
-        "Connector_PinHeader_2.54mm:PinHeader_1x16_P2.54mm_Vertical",
+        "SparkFun-Connector:1x16_Locking",
         "J1",
     )
     for ref in CURRENT_JACK_NETS:

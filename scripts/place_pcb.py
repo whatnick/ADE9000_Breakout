@@ -19,8 +19,9 @@ TERMINAL_LIB = KICAD_FOOTPRINTS / "TerminalBlock_4Ucon.pretty"
 TERMINAL_NAME = "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal"
 TERMINAL_MODEL = "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
 TERMINAL_MODEL_OFFSET = (-1.75, -0.05, 0.0)
-HEADER_LIB = KICAD_FOOTPRINTS / "Connector_PinHeader_2.54mm.pretty"
-HEADER_NAME = "PinHeader_1x16_P2.54mm_Vertical"
+HEADER_LIB = ROOT / "footprints" / "SparkFun-Connector.pretty"
+HEADER_NAME = "1x16_Locking"
+HEADER_MODEL = "${KIPRJMOD}/models/step/PinHeader_1x16_P2.54mm_Vertical.step"
 RESISTOR_LIB = KICAD_FOOTPRINTS / "Resistor_SMD.pretty"
 RESISTOR_NAME = "R_0402_1005Metric"
 FOOTPRINT_PLUGIN = pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.KICAD_SEXP)
@@ -287,6 +288,18 @@ def set_terminal_model(fp: pcbnew.FOOTPRINT) -> None:
     fp.Models().append(model)
 
 
+def set_header_model(fp: pcbnew.FOOTPRINT) -> None:
+    models = fp.Models()
+    if hasattr(models, "clear"):
+        models.clear()
+    model = pcbnew.FP_3DMODEL()
+    model.m_Filename = HEADER_MODEL
+    model.m_Offset.Set(0.0, 0.0, 0.0)
+    model.m_Scale.Set(1.0, 1.0, 1.0)
+    model.m_Rotation.Set(0.0, 0.0, -90.0)
+    fp.Models().append(model)
+
+
 def normalize_silkscreen(board: pcbnew.BOARD) -> None:
     for fp in board.GetFootprints():
         if not hasattr(fp, "GetFields"):
@@ -323,7 +336,8 @@ def ensure_external_connectors(board: pcbnew.BOARD) -> None:
         if fp is not None:
             board.Remove(fp)
 
-    ensure_footprint(board, "J1", "DIGITAL", HEADER_LIB, HEADER_NAME, DIGITAL_HEADER_NETS)
+    fp = ensure_footprint(board, "J1", "DIGITAL", HEADER_LIB, HEADER_NAME, DIGITAL_HEADER_NETS)
+    set_header_model(fp)
 
     for ref, net_map in CURRENT_JACK_NETS.items():
         ensure_footprint(board, ref, "CT stereo", AUDIO_LIB, AUDIO_NAME, net_map)
@@ -354,7 +368,7 @@ def place_all(board: pcbnew.BOARD) -> None:
     for ref, x in [("J2", 155.000), ("J3", 162.000), ("J4", 169.000)]:
         place(board, ref, x, 131.250, 0)
 
-    place(board, "J1", 185.000, 86.100, 0)
+    place(board, "J1", 184.873, 86.100, -90)
 
     current_rows = ["IAP", "IAN", "IBP", "IBN", "ICP", "ICN", "INP", "INN"]
     for index, _name in enumerate(current_rows):

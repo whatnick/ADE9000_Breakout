@@ -17,6 +17,9 @@ fp-info-cache
 sym-lib-table
 fp-lib-table
 
+# Project-local footprint table for vendored SparkFun connector footprint
+!fp-lib-table
+
 # Fabrication outputs (generated, not source)
 gerbers/
 fab/

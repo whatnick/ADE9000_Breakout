@@ -22,6 +22,7 @@ The current board is an ATM90E36-style ADE9000 bench breakout, not the older tin
 - Current inputs: stereo jack style connectors, with YHDC current-output clamp support.
 - Voltage inputs: screw terminals.
 - Digital/debug signals: aggregated on one side for breadboard/logical analyzer access.
+- `J1` uses the project-local SparkFun `1x16_Locking` staggered/friction-fit footprint from `footprints/SparkFun-Connector.pretty`, placed at `(184.873, 86.1)` with -90 degree rotation so odd-numbered pads stay on the old `x=185.0` route centerline and pins 2-16 run downward.
 - GND planes: filled on F.Cu and B.Cu.
 - Power routing: `+3V3`, `AVDDOUT`, and `DVDDOUT` use the `Power` netclass with 0.25 mm tracks and 0.50/0.25 mm vias.
 - 3D CAD: populated parts use project-local STEP models under `models/step/`; full assembly export lives at `exports/step/ADE9000_Breakout.step`.
