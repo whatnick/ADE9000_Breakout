@@ -1,6 +1,6 @@
 # Copilot Instructions
 
-This repository is a KiCad 10 ADE9000 breakout board. Keep changes small, schematic-first, and validated with KiCad tools. For energy-monitor work, load the focused skills as applicable: circuit design, layout design, routing, PCB size/shape, and the ADE9000 project overlay.
+This repository is a KiCad 10 ADE9000 breakout board. Keep changes small, schematic-first, and validated with KiCad tools. For energy-monitor work, load the focused skills as applicable: circuit design, BOM sourcing, layout design, routing, PCB size/shape, and the ADE9000 project overlay.
 
 Project constraints:
 - Follow the ADE9000 datasheet Figure 55 test circuit.

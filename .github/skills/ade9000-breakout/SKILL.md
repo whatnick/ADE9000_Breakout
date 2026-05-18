@@ -9,6 +9,7 @@ argument-hint: "ADE9000 schematic, PCB, routing, or validation task"
 Use this skill for ADE9000_Breakout-specific facts. For reusable design principles, also load the relevant topic skill:
 
 - Circuit/schematic work: `whatnick-energy-monitor-circuit-design`
+- BOM and MPN sourcing: `whatnick-energy-monitor-bom-sourcing`
 - Component placement and silkscreen: `whatnick-energy-monitor-layout-design`
 - Routing, GND planes, netclasses, and DRC: `whatnick-energy-monitor-routing`
 - Board envelope, mounting holes, and connector edge plan: `whatnick-energy-monitor-pcb-size-shape`
