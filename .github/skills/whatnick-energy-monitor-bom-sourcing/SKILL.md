@@ -35,6 +35,8 @@ Use these as the first-choice values for new whatnick energy-monitor BOMs unless
 | Bulk input decoupling | 10 uF X5R | 0805 | `CL21A106KPFNNNE` | Samsung Electro-Mechanics | Default 0805 10 uF. Check DC bias and voltage derating. |
 | Green status LED | Green 0603 | 0603 | `LTST-C191KGKT` | Lite-On | Shared indicator LED where color is not functionally constrained. |
 
+For larger hand-assembled bench boards such as the ADE9000 ATM-style breakout, prefer 0603 equivalents for small passives while preserving the same electrical value, tolerance, dielectric, voltage rating, and measurement role. Current ADE9000 0603 choices are `RC0603FR-071KL`, `RC0603FR-0710KL`, `RC0603FR-072R4L`, `RC0603FR-07100KL`, `RC0603FR-072K49L`, `GRM188R71A104KA61D`, `GRM188R61A105KA61D`, `GRM188R71H223KA01D`, and `GRM1885C1H160JA01D`.
+
 ## Exact Mechanical Parts
 
 These are shared where the matching footprint and mechanical envelope are intentionally used:

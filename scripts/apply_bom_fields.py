@@ -73,36 +73,36 @@ for ref in ("CTA1", "CTB1", "CTC1", "CTN1"):
 for ref in ("C2", "C4", "C6", "C8"):
     BOM_FIELDS[ref] = {
         "Manufacturer": "Murata",
-        "MPN": "GRM155R71A104KA01D",
-        "Description": "100 nF 10 V X7R 0402 ceramic capacitor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM155R71A104KA01D",
-        "Mouser": "https://www.mouser.com/c/?q=GRM155R71A104KA01D",
+        "MPN": "GRM188R71A104KA61D",
+        "Description": "100 nF 10 V X7R 0603 ceramic capacitor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM188R71A104KA61D",
+        "Mouser": "https://www.mouser.com/c/?q=GRM188R71A104KA61D",
     }
 
 for ref in ("C9", "C10"):
     BOM_FIELDS[ref] = {
         "Manufacturer": "Murata",
-        "MPN": "GRM1555C1H160JA01D",
-        "Description": "16 pF 50 V C0G/NP0 0402 ceramic capacitor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM1555C1H160JA01D",
-        "Mouser": "https://www.mouser.com/c/?q=GRM1555C1H160JA01D",
+        "MPN": "GRM1885C1H160JA01D",
+        "Description": "16 pF 50 V C0G/NP0 0603 ceramic capacitor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM1885C1H160JA01D",
+        "Mouser": "https://www.mouser.com/c/?q=GRM1885C1H160JA01D",
     }
 
 BOM_FIELDS["C11"] = {
     "Manufacturer": "Murata",
-    "MPN": "GRM155R61A105KE15D",
-    "Description": "1 uF 10 V X5R 0402 ceramic capacitor",
-    "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM155R61A105KE15D",
-    "Mouser": "https://www.mouser.com/c/?q=GRM155R61A105KE15D",
+    "MPN": "GRM188R61A105KA61D",
+    "Description": "1 uF 10 V X5R 0603 ceramic capacitor",
+    "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM188R61A105KA61D",
+    "Mouser": "https://www.mouser.com/c/?q=GRM188R61A105KA61D",
 }
 
 for index in range(12, 26):
     BOM_FIELDS[f"C{index}"] = {
         "Manufacturer": "Murata",
-        "MPN": "GRM155R71H223KA12D",
-        "Description": "22 nF 50 V X7R 0402 ceramic capacitor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM155R71H223KA12D",
-        "Mouser": "https://www.mouser.com/c/?q=GRM155R71H223KA12D",
+        "MPN": "GRM188R71H223KA01D",
+        "Description": "22 nF 50 V X7R 0603 ceramic capacitor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM188R71H223KA01D",
+        "Mouser": "https://www.mouser.com/c/?q=GRM188R71H223KA01D",
     }
 
 BOM_FIELDS["C1"] = {
@@ -124,46 +124,46 @@ for ref in ("C3", "C5", "C7"):
 
 BOM_FIELDS["R1"] = {
     "Manufacturer": "YAGEO",
-    "MPN": "RC0402FR-0710KL",
-    "Description": "10 kOhm 1% 0402 thick-film resistor",
-    "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-0710KL",
-    "Mouser": "https://www.mouser.com/c/?q=RC0402FR-0710KL",
+    "MPN": "RC0603FR-0710KL",
+    "Description": "10 kOhm 1% 0603 thick-film resistor",
+    "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0603FR-0710KL",
+    "Mouser": "https://www.mouser.com/c/?q=RC0603FR-0710KL",
 }
 
 for index in range(2, 17):
     BOM_FIELDS[f"R{index}"] = {
         "Manufacturer": "YAGEO",
-        "MPN": "RC0402FR-071KL",
-        "Description": "1 kOhm 1% 0402 thick-film resistor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-071KL",
-        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-071KL",
+        "MPN": "RC0603FR-071KL",
+        "Description": "1 kOhm 1% 0603 thick-film resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0603FR-071KL",
+        "Mouser": "https://www.mouser.com/c/?q=RC0603FR-071KL",
     }
 
 for index in range(17, 21):
     BOM_FIELDS[f"R{index}"] = {
         "Manufacturer": "YAGEO",
-        "MPN": "RC0402FR-072R4L",
-        "Description": "2.4 Ohm 1% 0402 thick-film burden resistor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-072R4L",
-        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-072R4L",
+        "MPN": "RC0603FR-072R4L",
+        "Description": "2.4 Ohm 1% 0603 thick-film burden resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0603FR-072R4L",
+        "Mouser": "https://www.mouser.com/c/?q=RC0603FR-072R4L",
     }
 
 for index in range(21, 27):
     BOM_FIELDS[f"R{index}"] = {
         "Manufacturer": "YAGEO",
-        "MPN": "RC0402FR-07100KL",
-        "Description": "100 kOhm 1% 0402 voltage-divider high-side resistor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-07100KL",
-        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-07100KL",
+        "MPN": "RC0603FR-07100KL",
+        "Description": "100 kOhm 1% 0603 voltage-divider high-side resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0603FR-07100KL",
+        "Mouser": "https://www.mouser.com/c/?q=RC0603FR-07100KL",
     }
 
 for index in range(27, 33):
     BOM_FIELDS[f"R{index}"] = {
         "Manufacturer": "YAGEO",
-        "MPN": "RC0402FR-072K49L",
-        "Description": "2.49 kOhm 1% 0402 voltage-divider shunt resistor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-072K49L",
-        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-072K49L",
+        "MPN": "RC0603FR-072K49L",
+        "Description": "2.49 kOhm 1% 0603 voltage-divider shunt resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0603FR-072K49L",
+        "Mouser": "https://www.mouser.com/c/?q=RC0603FR-072K49L",
     }
 
 

@@ -22,7 +22,7 @@ The current board is an ATM90E36-style ADE9000 bench breakout, not the older tin
 - Board envelope: 65 mm x 55 mm with rounded corners and four M2 NPTH mounting holes.
 - Current inputs: stereo jack style connectors, with YHDC current-output clamp support.
 - Voltage inputs: screw terminals.
-- Voltage screw-terminal inputs are scaled for 12 VAC AC/AC transformer inputs using 100 kOhm high-side divider resistors and 2.49 kOhm shunts before the existing 1 k / 22 nF ADE9000 anti-alias filters. Keep SMD parts on F.Cu for easier hand soldering unless a specific assembly constraint overrides it.
+- Voltage screw-terminal inputs are scaled for 12 VAC AC/AC transformer inputs using 100 kOhm high-side divider resistors and 2.49 kOhm shunts before the existing 1 k / 22 nF ADE9000 anti-alias filters. Keep small passives as 0603 on F.Cu for easier hand soldering unless a specific assembly constraint overrides it.
 - Digital/debug signals: aggregated on one side for breadboard/logical analyzer access.
 - `J1` uses the project-local SparkFun `1x16_Locking` staggered/friction-fit footprint from `footprints/SparkFun-Connector.pretty`, placed at `(184.873, 86.1)` with -90 degree rotation so odd-numbered pads stay on the old `x=185.0` route centerline and pins 2-16 run downward.
 - GND planes: filled on F.Cu and B.Cu.
@@ -48,7 +48,7 @@ The previous compact/JST policy remains useful historical context:
 - VDD, AVDDOUT, DVDDOUT, and REF need local decoupling near U1.
 - Clock uses a 24.576 MHz crystal with load capacitors unless using an external clock.
 - PM0/PM1 are grounded for normal operating mode.
-- YHDC current-output clamp support uses R17-R20, 2.4R 0402 burden/multiplier resistors across the jack-side current pairs.
+- YHDC current-output clamp support uses R17-R20, 2.4R 0603 burden/multiplier resistors across the jack-side current pairs.
 - Voltage terminal support uses R21-R26 as 100 kOhm high-side divider resistors and R27-R32 as 2.49 kOhm shunts, producing about 0.41 V peak at the divider node from a 12 VAC RMS transformer input before the 1 k ADE9000 filter resistor.
 
 ## Schematic Generation Rules

@@ -65,7 +65,7 @@ When supporting YHDC or similar current-output clamps:
 - Add a clearly labeled burden/multiplier resistor across each jack-side current pair.
 - Keep burden resistors close to the input connector but before the IC-side anti-alias network.
 - Use explicit pair nets such as `IAP_J`/`IAN_J`, `IBP_J`/`IBN_J`, `ICP_J`/`ICN_J`, and `INP_J`/`INN_J`.
-- For the ADE9000 ATM-style board, R17-R20 are 2.4R 0402 burden/multiplier resistors across the four current jack pairs.
+- For the ADE9000 ATM-style board, R17-R20 are 2.4R 0603 burden/multiplier resistors across the four current jack pairs for hand assembly.
 
 ## Digital And Debug Policy
 

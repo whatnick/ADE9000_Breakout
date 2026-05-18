@@ -196,25 +196,25 @@ print("--- Power Decoupling ---")
 add_component("Device:C_Polarized", "C1", "10uF", 157, 83,
               footprint="Capacitor_SMD:C_0805_2012Metric")
 add_component("Device:C", "C2", "100nF", 163, 83,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # AVDDOUT (pin 25, right side y=79.68)
 add_component("Device:C_Polarized", "C3", "4.7uF", 157, 78,
               footprint="Capacitor_SMD:C_0805_2012Metric")
 add_component("Device:C", "C4", "100nF", 163, 78,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # DVDDOUT (pin 3, left side y=75.87)
 add_component("Device:C_Polarized", "C5", "4.7uF", 105, 72,
               footprint="Capacitor_SMD:C_0805_2012Metric")
 add_component("Device:C", "C6", "100nF", 111, 72,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # REF (pin 16, left side y=108.89)
 add_component("Device:C_Polarized", "C7", "4.7uF", 105, 110,
               footprint="Capacitor_SMD:C_0805_2012Metric")
 add_component("Device:C", "C8", "100nF", 111, 110,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # ─────────────────────────────────────────────────────────────────────────────
 print()
@@ -230,9 +230,9 @@ add_component("Device:Crystal", "Y1", "24.576MHz", 157, 91,
 
 # C9, C10: 16pF crystal load capacitors
 add_component("Device:C", "C9",  "16pF", 163, 89,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 add_component("Device:C", "C10", "16pF", 163, 93,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # ─────────────────────────────────────────────────────────────────────────────
 print()
@@ -241,9 +241,9 @@ print("--- Reset RC ---")
 # RESET (pin 6, left side y=83.49)
 # R1: 10kΩ pullup, C11: 1µF filter cap
 add_component("Device:R", "R1", "10k", 100, 80,
-              footprint="Resistor_SMD:R_0402_1005Metric")
+              footprint="Resistor_SMD:R_0603_1608Metric")
 add_component("Device:C", "C11", "1uF", 106, 80,
-              footprint="Capacitor_SMD:C_0402_1005Metric")
+              footprint="Capacitor_SMD:C_0603_1608Metric")
 
 # ─────────────────────────────────────────────────────────────────────────────
 print()
@@ -266,9 +266,9 @@ aa_current = [
 ]
 for net, y in aa_current:
     add_component("Device:R", f"R{r_idx}", "1k", 75, y,
-                  footprint="Resistor_SMD:R_0402_1005Metric")
+                  footprint="Resistor_SMD:R_0603_1608Metric")
     add_component("Device:C", f"C{c_idx}", "22nF", 90, y+3.81,
-                  footprint="Capacitor_SMD:C_0402_1005Metric")
+                  footprint="Capacitor_SMD:C_0603_1608Metric")
     r_idx += 1
     c_idx += 1
 
@@ -280,9 +280,9 @@ aa_voltage = [
 ]
 for net, y in aa_voltage:
     add_component("Device:R", f"R{r_idx}", "1k", 75, y,
-                  footprint="Resistor_SMD:R_0402_1005Metric")
+                  footprint="Resistor_SMD:R_0603_1608Metric")
     add_component("Device:C", f"C{c_idx}", "22nF", 90, y+3.81,
-                  footprint="Capacitor_SMD:C_0402_1005Metric")
+                  footprint="Capacitor_SMD:C_0603_1608Metric")
     r_idx += 1
     c_idx += 1
 
@@ -293,7 +293,7 @@ print("--- CF2 LED indicator ---")
 # CF2 = pin 34 at (142.7, 102.54)
 # LED + 1kΩ resistor from +3V3 to CF2
 add_component("Device:R",   "R16", "1k",  157, 102,
-              footprint="Resistor_SMD:R_0402_1005Metric")
+              footprint="Resistor_SMD:R_0603_1608Metric")
 add_component("Device:LED", "D1",  "GREEN_LED", 157, 106,
               footprint="LED_SMD:LED_0603_1608Metric")
 

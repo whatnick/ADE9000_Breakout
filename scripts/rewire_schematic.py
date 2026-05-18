@@ -18,6 +18,9 @@ import sexpdata
 SCH_PATH = r"c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_sch"
 KI_IFACE = r"c:\Users\tisha\dev\KiCAD-MCP-Server\python\kicad_interface.py"
 KI_PYTHON = r"C:\Program Files\KiCad\10.0\bin\python.exe"
+RESISTOR_FOOTPRINT = "Resistor_SMD:R_0603_1608Metric"
+CAPACITOR_0603_FOOTPRINT = "Capacitor_SMD:C_0603_1608Metric"
+CAPACITOR_0603_REFS = {"C2", "C4", "C6", "C8", "C9", "C10", "C11"} | {f"C{index}" for index in range(12, 26)}
 IO_STUB = 2.54
 PASSIVE_STUB = 1.27
 FILTER_R_X = 82.0
@@ -227,7 +230,14 @@ def ensure_resistor_symbol(data: list, symbols: list, ref: str, value: str, temp
     set_lib_id(existing, "Device:R")
     set_property(existing, "Reference", ref)
     set_property(existing, "Value", value)
-    set_property(existing, "Footprint", "Resistor_SMD:R_0402_1005Metric")
+    set_property(existing, "Footprint", RESISTOR_FOOTPRINT)
+
+
+def normalize_passive_footprints(symbol: list, ref: str) -> None:
+    if ref.startswith("R") and ref[1:].isdigit():
+        set_property(symbol, "Footprint", RESISTOR_FOOTPRINT)
+    elif ref in CAPACITOR_0603_REFS:
+        set_property(symbol, "Footprint", CAPACITOR_0603_FOOTPRINT)
 
 
 def normalize_debug_symbols(data: list) -> None:
@@ -320,6 +330,8 @@ def layout_components() -> None:
         if not (isinstance(item, list) and item and atom_name(item[0]) == "symbol"):
             continue
         ref = component_ref(item)
+        if ref:
+            normalize_passive_footprints(item, ref)
         if ref not in poses:
             continue
 
