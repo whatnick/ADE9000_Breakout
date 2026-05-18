@@ -15,8 +15,8 @@ QFN_LIB = KICAD_FOOTPRINTS / "Package_DFN_QFN.pretty"
 QFN_NAME = "QFN-40-1EP_6x6mm_P0.5mm_EP4.6x4.6mm"
 AUDIO_LIB = KICAD_FOOTPRINTS / "Connector_Audio.pretty"
 AUDIO_NAME = "Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal"
-TERMINAL_LIB = KICAD_FOOTPRINTS / "TerminalBlock_4Ucon.pretty"
-TERMINAL_NAME = "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal"
+TERMINAL_LIB = ROOT / "footprints" / "ADE9000-Local.pretty"
+TERMINAL_NAME = "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal_ADE9000"
 TERMINAL_MODEL = "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
 TERMINAL_MODEL_OFFSET = (-1.75, -0.05, 0.0)
 HEADER_LIB = ROOT / "footprints" / "SparkFun-Connector.pretty"
@@ -75,6 +75,15 @@ VOLTAGE_TERMINAL_NETS = {
     "J3": {"1": "VBP_J", "2": "VBN_J"},
     "J4": {"1": "VCP_J", "2": "VCN_J"},
 }
+
+VOLTAGE_DIVIDER_ROWS = [
+    ("R21", "R27", "R11", "C21", "VAP_J", "VAP_DIV", "VAP"),
+    ("R22", "R28", "R10", "C20", "VAN_J", "VAN_DIV", "VAN"),
+    ("R23", "R29", "R13", "C23", "VBP_J", "VBP_DIV", "VBP"),
+    ("R24", "R30", "R12", "C22", "VBN_J", "VBN_DIV", "VBN"),
+    ("R25", "R31", "R15", "C25", "VCP_J", "VCP_DIV", "VCP"),
+    ("R26", "R32", "R14", "C24", "VCN_J", "VCN_DIV", "VCN"),
+]
 
 U1_NETS = {
     "1": "+3V3",
@@ -188,7 +197,7 @@ def make_terminal_footprint(ref: str, value: str) -> pcbnew.FOOTPRINT:
     fp = pcbnew.FOOTPRINT(None)
     fp.SetReference(ref)
     fp.SetValue(value)
-    fp.SetFPID(pcbnew.LIB_ID("TerminalBlock_4Ucon", TERMINAL_NAME))
+    fp.SetFPID(pcbnew.LIB_ID("ADE9000-Local", TERMINAL_NAME))
     fp.SetLayer(pcbnew.F_Cu)
 
     for pad_number, x_offset in [("1", -1.75), ("2", 1.75)]:
@@ -254,6 +263,16 @@ def place(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 0.0)
     if fp is None:
         return
     if fp.GetLayer() != pcbnew.F_Cu:
+        fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
+    fp.SetPosition(vmm(x, y))
+    fp.SetOrientationDegrees(angle)
+
+
+def place_bottom(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 0.0) -> None:
+    fp = footprint_by_ref(board, ref)
+    if fp is None:
+        return
+    if fp.GetLayer() != pcbnew.B_Cu:
         fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
     fp.SetPosition(vmm(x, y))
     fp.SetOrientationDegrees(angle)
@@ -352,10 +371,25 @@ def ensure_yhdc_burden_resistors(board: pcbnew.BOARD) -> None:
         ensure_footprint(board, ref, "2.4R", RESISTOR_LIB, RESISTOR_NAME, net_map)
 
 
+def ensure_voltage_divider_resistors(board: pcbnew.BOARD) -> None:
+    for high_ref, low_ref, filter_ref, cap_ref, terminal_net, divided_net, ade_net in VOLTAGE_DIVIDER_ROWS:
+        ensure_footprint(board, high_ref, "100k", RESISTOR_LIB, RESISTOR_NAME, {"1": terminal_net, "2": divided_net})
+        ensure_footprint(board, low_ref, "2.49k", RESISTOR_LIB, RESISTOR_NAME, {"1": divided_net, "2": "GND"})
+        ensure_footprint(board, filter_ref, "1k", RESISTOR_LIB, RESISTOR_NAME, {"1": divided_net, "2": ade_net})
+
+        cap = footprint_by_ref(board, cap_ref)
+        if cap is not None:
+            for pad_number, net_name in {"1": ade_net, "2": "GND"}.items():
+                pad = cap.FindPadByNumber(pad_number)
+                if pad is not None:
+                    set_net(board, pad, net_name)
+
+
 def place_all(board: pcbnew.BOARD) -> None:
     add_u1_if_missing(board)
     ensure_external_connectors(board)
     ensure_yhdc_burden_resistors(board)
+    ensure_voltage_divider_resistors(board)
 
     place(board, "U1", 158.500, 104.000, 0)
 
@@ -379,6 +413,8 @@ def place_all(board: pcbnew.BOARD) -> None:
     voltage_refs = [(10, 20), (11, 21), (12, 22), (13, 23), (14, 24), (15, 25)]
     for index, (resistor, cap) in enumerate(voltage_refs):
         y = 116.000 + index * 2.200
+        place_bottom(board, f"R{21 + index}", 150.200, y, 0)
+        place_bottom(board, f"R{27 + index}", 153.000, y, 0)
         place(board, f"R{resistor}", 160.000, y, 0)
         place(board, f"C{cap}", 163.000, y, 90)
 
@@ -442,6 +478,8 @@ def place_all(board: pcbnew.BOARD) -> None:
 
     for index in range(6):
         y = 116.000 + index * 2.200
+        place_ref(board, f"R{21 + index}", 148.500, y - 1.050, 0)
+        place_ref(board, f"R{27 + index}", 151.800, y + 1.050, 0)
         place_ref(board, f"R{10 + index}", 157.800, y, 0)
         place_ref(board, f"C{20 + index}", 165.100, y, 0)
 

@@ -26,6 +26,8 @@ FILTER_INPUT_LABEL_X = 62.0
 FILTER_OUTPUT_LABEL_X = 98.0
 BURDEN_R_X = 52.0
 BURDEN_LABEL_X = 46.0
+DIVIDER_R_X = 70.0
+DIVIDER_SHUNT_R_X = 75.5
 DIGITAL_HEADER_NETS = [
     "+3V3",
     "GND",
@@ -67,12 +69,23 @@ FILTER_ROWS = [
     ("R8", "C18", "INP_J", "INP", 101.0),
     ("R9", "C19", "INN_J", "INN", 109.5),
     ("R11", "C21", "VAP_J", "VAP", 127.0),
-    ("R10", "C20", "VAN_J", "VAN", 135.5),
-    ("R13", "C23", "VBP_J", "VBP", 144.0),
-    ("R12", "C22", "VBN_J", "VBN", 152.5),
-    ("R15", "C25", "VCP_J", "VCP", 161.0),
-    ("R14", "C24", "VCN_J", "VCN", 169.5),
+    ("R10", "C20", "VAN_J", "VAN", 137.5),
+    ("R13", "C23", "VBP_J", "VBP", 148.0),
+    ("R12", "C22", "VBN_J", "VBN", 158.5),
+    ("R15", "C25", "VCP_J", "VCP", 169.0),
+    ("R14", "C24", "VCN_J", "VCN", 179.5),
 ]
+
+VOLTAGE_DIVIDER_ROWS = [
+    ("R21", "R27", "VAP_J", "VAP_DIV", "R11", "C21", "VAP", 127.0),
+    ("R22", "R28", "VAN_J", "VAN_DIV", "R10", "C20", "VAN", 137.5),
+    ("R23", "R29", "VBP_J", "VBP_DIV", "R13", "C23", "VBP", 148.0),
+    ("R24", "R30", "VBN_J", "VBN_DIV", "R12", "C22", "VBN", 158.5),
+    ("R25", "R31", "VCP_J", "VCP_DIV", "R15", "C25", "VCP", 169.0),
+    ("R26", "R32", "VCN_J", "VCN_DIV", "R14", "C24", "VCN", 179.5),
+]
+
+VOLTAGE_FILTER_REFS = {row[4] for row in VOLTAGE_DIVIDER_ROWS}
 
 YHDC_BURDEN_ROWS = [
     ("R17", "IAP_J", "IAN_J", 54.25),
@@ -267,11 +280,14 @@ def normalize_debug_symbols(data: list) -> None:
             ref,
             "Voltage terminal",
             "Connector_Generic:Conn_01x02",
-            "TerminalBlock_4Ucon:TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal",
+            "ADE9000-Local:TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal_ADE9000",
             "J3",
         )
     for ref, *_rest in YHDC_BURDEN_ROWS:
         ensure_resistor_symbol(data, symbols, ref, "2.4R")
+    for high_ref, low_ref, *_rest in VOLTAGE_DIVIDER_ROWS:
+        ensure_resistor_symbol(data, symbols, high_ref, "100k")
+        ensure_resistor_symbol(data, symbols, low_ref, "2.49k")
 
 
 def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
@@ -294,6 +310,9 @@ def layout_components() -> None:
     for ref_r, ref_c, *_rest, row_y in FILTER_ROWS:
         poses[ref_r] = (FILTER_R_X, row_y, 90.0)
         poses[ref_c] = (FILTER_C_X, row_y + 3.81, 0.0)
+    for high_ref, low_ref, *_rest, row_y in VOLTAGE_DIVIDER_ROWS:
+        poses[high_ref] = (DIVIDER_R_X, row_y, 90.0)
+        poses[low_ref] = (DIVIDER_SHUNT_R_X, row_y + 3.81, 0.0)
 
     data = sexpdata.loads(Path(SCH_PATH).read_text())
     normalize_debug_symbols(data)
@@ -470,6 +489,37 @@ def add_filter_row(ref_r: str, ref_c: str, external_net: str, ade_net: str, y: f
     row_errors += report_single(f"{ade_net} node label", add_label(ade_net, FILTER_OUTPUT_LABEL_X, y, 0))
     row_errors += report_single(f"{ade_net} node wire", add_wire(c_x, y, FILTER_OUTPUT_LABEL_X, y))
     row_errors += report_pair(f"{ref_c} to GND", *connect_with_stub("GND", c_x, c_bottom_y, c_x, c_bottom_y + PASSIVE_STUB, 0))
+    return row_errors
+
+
+def add_voltage_divider_row(
+    high_ref: str,
+    low_ref: str,
+    external_net: str,
+    divided_net: str,
+    filter_ref: str,
+    cap_ref: str,
+    ade_net: str,
+    y: float,
+) -> int:
+    row_errors = 0
+    high_left = DIVIDER_R_X - 3.81
+    high_right = DIVIDER_R_X + 3.81
+    shunt_top = y
+    shunt_bottom = y + 7.62
+    filter_left = FILTER_R_X - 3.81
+    filter_right = FILTER_R_X + 3.81
+    cap_bottom = y + 7.62
+
+    row_errors += report_pair(f"{external_net} into {high_ref}", *connect_with_stub(external_net, high_left, y, FILTER_INPUT_LABEL_X, y, 180))
+    row_errors += report_single(f"{high_ref} to {low_ref}/{filter_ref}", add_wire(high_right, y, DIVIDER_SHUNT_R_X, shunt_top))
+    row_errors += report_single(f"{divided_net} to {filter_ref}", add_wire(DIVIDER_SHUNT_R_X, shunt_top, filter_left, y))
+    row_errors += report_single(f"{divided_net} node label", add_label(divided_net, DIVIDER_SHUNT_R_X, shunt_top, 0))
+    row_errors += report_pair(f"{low_ref} to GND", *connect_with_stub("GND", DIVIDER_SHUNT_R_X, shunt_bottom, DIVIDER_SHUNT_R_X, shunt_bottom + PASSIVE_STUB, 0))
+    row_errors += report_single(f"{filter_ref} to {cap_ref}", add_wire(filter_right, y, FILTER_C_X, y))
+    row_errors += report_single(f"{ade_net} node label", add_label(ade_net, FILTER_OUTPUT_LABEL_X, y, 0))
+    row_errors += report_single(f"{ade_net} node wire", add_wire(FILTER_C_X, y, FILTER_OUTPUT_LABEL_X, y))
+    row_errors += report_pair(f"{cap_ref} to GND", *connect_with_stub("GND", FILTER_C_X, cap_bottom, FILTER_C_X, cap_bottom + PASSIVE_STUB, 0))
     return row_errors
 
 
@@ -668,7 +718,13 @@ for row in YHDC_BURDEN_ROWS:
 print()
 print("--- AA Input Filters ---")
 for row in FILTER_ROWS:
-    errors += add_filter_row(*row, x_label=FILTER_INPUT_LABEL_X)
+    if row[0] not in VOLTAGE_FILTER_REFS:
+        errors += add_filter_row(*row, x_label=FILTER_INPUT_LABEL_X)
+
+print()
+print("--- 12 VAC Voltage Divider Inputs ---")
+for row in VOLTAGE_DIVIDER_ROWS:
+    errors += add_voltage_divider_row(*row)
 
 print()
 print("--- Decoupling and Reference Caps ---")

@@ -1,0 +1,83 @@
+(footprint "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal_ADE9000"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -1 -5.05 0)
+		(layer "F.SilkS")
+		(uuid "1ce5936b-cd90-4118-a454-e0e0fc56dd16")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal_ADE9000"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "d32a765e-1d29-4fd0-b02f-0177bbaa9fae")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2ef57dbd-7b4b-4d0c-a5e1-cc29cb27adaf")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a1ba4fd9-f84d-4705-b3be-c118d7bfe7ca")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.2)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(pad "1" thru_hole oval
+		(at -1.75 0)
+		(size 2.2 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 45)
+		(uuid "c5c6f528-a43a-41ca-ad8d-61661adf92e0")
+	)
+	(pad "2" thru_hole oval
+		(at 1.75 0)
+		(size 2.2 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 45)
+		(uuid "cf90932b-6d6b-4899-bc3f-440dfb2e2a3f")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
+		(offset
+			(xyz -1.75 -0.05 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

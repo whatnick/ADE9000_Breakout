@@ -148,6 +148,24 @@ for index in range(17, 21):
         "Mouser": "https://www.mouser.com/c/?q=RC0402FR-072R4L",
     }
 
+for index in range(21, 27):
+    BOM_FIELDS[f"R{index}"] = {
+        "Manufacturer": "YAGEO",
+        "MPN": "RC0402FR-07100KL",
+        "Description": "100 kOhm 1% 0402 voltage-divider high-side resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-07100KL",
+        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-07100KL",
+    }
+
+for index in range(27, 33):
+    BOM_FIELDS[f"R{index}"] = {
+        "Manufacturer": "YAGEO",
+        "MPN": "RC0402FR-072K49L",
+        "Description": "2.49 kOhm 1% 0402 voltage-divider shunt resistor",
+        "DigiKey": "https://www.digikey.com/en/products/result?keywords=RC0402FR-072K49L",
+        "Mouser": "https://www.mouser.com/c/?q=RC0402FR-072K49L",
+    }
+
 
 def escape(value: str) -> str:
     return value.replace('\\', '\\\\').replace('"', '\\"')

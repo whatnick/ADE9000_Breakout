@@ -39,6 +39,8 @@ SIGNAL_TEXTS = [
     ("VA", 154.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "va"),
     ("VB", 162.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vb"),
     ("VC", 170.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vc"),
+    ("VIN 12VAC MAX", 145.500, 133.400, 0, "F.SilkS", 0.8, 0.2, "vinmax"),
+    ("CT 0.5Vpk MAX", 144.000, 86.000, 0, "F.SilkS", 0.8, 0.2, "ctmax"),
     ("DIGITAL", 175.000, 82.600, 0, "F.SilkS", 0.8, 0.2, "digital"),
 ]
 LEGACY_SIGNAL_TEXTS = ["DREADY", "SPI", "RESET", "CLKIN", "CLKOUT", "CF3/ZX"]

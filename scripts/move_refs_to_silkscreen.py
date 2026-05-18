@@ -25,7 +25,7 @@ REFERENCE_PLACEMENTS = {
     "J3": (162.000, 126.200, 0),
     "J4": (170.000, 126.200, 0),
     "U1": (158.500, 99.600, 0),
-    "C1": (167.900, 99.500, 0),
+    "C1": (168.700, 99.500, 0),
     "C2": (163.000, 99.500, 0),
     "C3": (160.600, 114.400, 0),
     "C4": (162.500, 113.600, 0),
@@ -49,6 +49,8 @@ for index in range(8):
 for index in range(6):
     REFERENCE_PLACEMENTS[f"R{10 + index}"] = (157.800, 116.000 + index * 2.200, 0)
     REFERENCE_PLACEMENTS[f"C{20 + index}"] = (165.100, 116.000 + index * 2.200, 0)
+    REFERENCE_PLACEMENTS[f"R{21 + index}"] = (148.500, 114.950 + index * 2.200, 0)
+    REFERENCE_PLACEMENTS[f"R{27 + index}"] = (151.800, 117.050 + index * 2.200, 0)
 
 
 def vmm(x_mm: float, y_mm: float) -> pcbnew.VECTOR2I:

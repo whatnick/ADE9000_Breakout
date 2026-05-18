@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name "SparkFun-Connector")(type "KiCad")(uri "${KIPRJMOD}/footprints/SparkFun-Connector.pretty")(options "")(descr "Project-local SparkFun connector footprints"))
+  (lib (name "ADE9000-Local")(type "KiCad")(uri "${KIPRJMOD}/footprints/ADE9000-Local.pretty")(options "")(descr "Project-local ADE9000 board-proven footprints"))
 )
