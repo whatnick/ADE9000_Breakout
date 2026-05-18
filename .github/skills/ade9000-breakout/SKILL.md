@@ -69,6 +69,8 @@ ERC interpretation:
 Primary scripts:
 
 - `scripts/rewire_schematic.py`: deterministic schematic regeneration.
+- `scripts/apply_bom_fields.py`: deterministic schematic sourcing fields for Manufacturer, MPN, DigiKey, Mouser, and Description.
+- `scripts/export_bom.py`: grouped CSV/XLSX/HTML BOM export from schematic fields.
 - `scripts/place_pcb.py`: deterministic footprint/net assignment and placement.
 - `scripts/apply_mechanical.py`: rounded outline, M2 holes, and board markings.
 - `scripts/move_refs_to_silkscreen.py`: visible reference designators on matching silkscreen layers.

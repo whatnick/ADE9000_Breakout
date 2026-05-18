@@ -129,6 +129,15 @@ This provides a first-order anti-aliasing LPF with fc ≈ 7.2 kHz, matching the 
 
 ## BOM Summary
 
+Source purchasing fields live on the schematic symbols as `Manufacturer`, `MPN`, `DigiKey`, `Mouser`, and `Description` properties. Regenerate the grouped purchasing BOM with:
+
+```powershell
+& "C:\Program Files\KiCad\10.0\bin\python.exe" .\scripts\apply_bom_fields.py
+& "C:\Program Files\KiCad\10.0\bin\python.exe" .\scripts\export_bom.py --html .\bom\ADE9000_Breakout_BOM.html
+```
+
+Generated outputs are available as [`bom/ADE9000_Breakout_BOM.csv`](bom/ADE9000_Breakout_BOM.csv), [`bom/ADE9000_Breakout_BOM.xlsx`](bom/ADE9000_Breakout_BOM.xlsx), and [`bom/ADE9000_Breakout_BOM.html`](bom/ADE9000_Breakout_BOM.html). The DigiKey and Mouser fields use distributor search URLs for the selected manufacturer MPNs so stock and packaging can be checked at order time.
+
 | Ref | Value | Package | Notes |
 |-----|-------|---------|-------|
 | U1 | ADE9000 | CP-40-7 LFCSP | Main IC |

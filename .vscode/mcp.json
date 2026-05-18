@@ -24,6 +24,11 @@
         "pcbparts": {
             "type": "http",
             "url": "https://pcbparts.dev/mcp"
+        },
+        "playwright": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "@playwright/mcp@latest"]
         }
     }
 }

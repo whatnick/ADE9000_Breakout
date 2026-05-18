@@ -30,6 +30,10 @@ fab/
 *.csv
 *.xml
 
+# Source purchasing BOMs
+!bom/*.csv
+!bom/*.xlsx
+
 # Export outputs
 *.pdf
 *.svg
