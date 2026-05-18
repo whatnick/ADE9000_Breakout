@@ -13,31 +13,33 @@ LEGACY_BACK_ATTRIBUTIONS = [
     "by Tisham Dhar\nhttps://whatnick.com\nv0.1 09/05/2026",
 ]
 LOGO_REF = "LOGO1"
+CURRENT_JACK_REFS = {"CTA1", "CTB1", "CTC1", "CTN1"}
+FOOTPRINT_GRAPHIC_BLOCKS = ("fp_line", "fp_arc", "fp_circle", "fp_poly", "fp_rect")
 SIGNAL_TEXTS = [
-    ("3V3", 180.700, 86.100, 0, "F.SilkS", 0.6, 0.15, "pin1"),
-    ("GND", 180.700, 88.640, 0, "F.SilkS", 0.6, 0.15, "pin2"),
-    ("SS", 180.700, 91.180, 0, "F.SilkS", 0.6, 0.15, "pin3"),
-    ("MOSI", 180.700, 93.720, 0, "F.SilkS", 0.6, 0.15, "pin4"),
-    ("MISO", 180.700, 96.260, 0, "F.SilkS", 0.6, 0.15, "pin5"),
-    ("SCLK", 180.700, 98.800, 0, "F.SilkS", 0.6, 0.15, "pin6"),
-    ("IRQ0", 180.700, 101.340, 0, "F.SilkS", 0.6, 0.15, "pin7"),
-    ("IRQ1", 180.700, 103.880, 0, "F.SilkS", 0.6, 0.15, "pin8"),
-    ("CF1", 180.700, 106.420, 0, "F.SilkS", 0.6, 0.15, "pin9"),
-    ("CF2", 180.700, 108.960, 0, "F.SilkS", 0.6, 0.15, "pin10"),
-    ("CF3", 180.700, 111.500, 0, "F.SilkS", 0.6, 0.15, "pin11"),
-    ("DRDY", 180.700, 114.040, 0, "F.SilkS", 0.6, 0.15, "pin12"),
-    ("RST", 180.700, 116.580, 0, "F.SilkS", 0.6, 0.15, "pin13"),
-    ("CLKI", 180.700, 119.120, 0, "F.SilkS", 0.6, 0.15, "pin14"),
-    ("CLKO", 180.700, 121.660, 0, "F.SilkS", 0.6, 0.15, "pin15"),
-    ("GND", 180.700, 124.200, 0, "F.SilkS", 0.6, 0.15, "pin16"),
-    ("CTA", 126.000, 88.000, 90, "F.SilkS", 0.8, 0.2, "cta"),
-    ("CTB", 126.000, 101.000, 90, "F.SilkS", 0.8, 0.2, "ctb"),
-    ("CTC", 126.000, 114.000, 90, "F.SilkS", 0.8, 0.2, "ctc"),
-    ("CTN", 126.000, 127.000, 90, "F.SilkS", 0.8, 0.2, "ctn"),
+    ("3V3", 180.700, 86.100, 0, "F.SilkS", 0.8, 0.2, "pin1"),
+    ("GND", 180.700, 88.640, 0, "F.SilkS", 0.8, 0.2, "pin2"),
+    ("SS", 180.700, 91.180, 0, "F.SilkS", 0.8, 0.2, "pin3"),
+    ("MOSI", 180.700, 93.720, 0, "F.SilkS", 0.8, 0.2, "pin4"),
+    ("MISO", 180.700, 96.260, 0, "F.SilkS", 0.8, 0.2, "pin5"),
+    ("SCLK", 180.700, 98.800, 0, "F.SilkS", 0.8, 0.2, "pin6"),
+    ("IRQ0", 180.700, 101.340, 0, "F.SilkS", 0.8, 0.2, "pin7"),
+    ("IRQ1", 180.700, 103.880, 0, "F.SilkS", 0.8, 0.2, "pin8"),
+    ("CF1", 180.700, 106.420, 0, "F.SilkS", 0.8, 0.2, "pin9"),
+    ("CF2", 180.700, 108.960, 0, "F.SilkS", 0.8, 0.2, "pin10"),
+    ("CF3", 180.700, 111.500, 0, "F.SilkS", 0.8, 0.2, "pin11"),
+    ("DRDY", 180.700, 114.040, 0, "F.SilkS", 0.8, 0.2, "pin12"),
+    ("RST", 180.700, 116.580, 0, "F.SilkS", 0.8, 0.2, "pin13"),
+    ("CLKI", 180.700, 119.120, 0, "F.SilkS", 0.8, 0.2, "pin14"),
+    ("CLKO", 180.700, 121.660, 0, "F.SilkS", 0.8, 0.2, "pin15"),
+    ("GND", 180.700, 124.200, 0, "F.SilkS", 0.8, 0.2, "pin16"),
+    ("CTA", 130.700, 88.000, 90, "F.SilkS", 0.8, 0.2, "cta"),
+    ("CTB", 130.700, 101.000, 90, "F.SilkS", 0.8, 0.2, "ctb"),
+    ("CTC", 130.700, 114.000, 90, "F.SilkS", 0.8, 0.2, "ctc"),
+    ("CTN", 130.700, 127.000, 90, "F.SilkS", 0.8, 0.2, "ctn"),
     ("VA", 154.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "va"),
     ("VB", 162.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vb"),
     ("VC", 170.000, 127.700, 0, "F.SilkS", 0.8, 0.2, "vc"),
-    ("DIGITAL", 183.500, 82.600, 0, "F.SilkS", 0.8, 0.2, "digital"),
+    ("DIGITAL", 175.000, 82.600, 0, "F.SilkS", 0.8, 0.2, "digital"),
 ]
 LEGACY_SIGNAL_TEXTS = ["DREADY", "SPI", "RESET", "CLKIN", "CLKOUT", "CF3/ZX"]
 
@@ -92,6 +94,48 @@ def remove_blocks(text: str, block_start: str, match_text: str) -> str:
         cursor = end
 
 
+def remove_footprint_silk_graphics(block: str) -> str:
+    cursor = 0
+    output: list[str] = []
+
+    while True:
+        starts = [
+            block.find(f"\t\t({block_name}", cursor)
+            for block_name in FOOTPRINT_GRAPHIC_BLOCKS
+        ]
+        starts = [start for start in starts if start != -1]
+        if not starts:
+            output.append(block[cursor:])
+            return "".join(output)
+
+        start = min(starts)
+        end = find_block_end(block, start)
+        child = block[start:end]
+        output.append(block[cursor:start])
+        if '(layer "F.SilkS")' not in child:
+            output.append(child)
+        cursor = end
+
+
+def strip_current_jack_silkscreen_text(board_text: str) -> str:
+    cursor = 0
+    output: list[str] = []
+
+    while True:
+        start = board_text.find("\t(footprint", cursor)
+        if start == -1:
+            output.append(board_text[cursor:])
+            return "".join(output)
+
+        end = find_block_end(board_text, start)
+        block = board_text[start:end]
+        output.append(board_text[cursor:start])
+        if any(f'(property "Reference" "{ref}"' in block for ref in CURRENT_JACK_REFS):
+            block = remove_footprint_silk_graphics(block)
+        output.append(block)
+        cursor = end
+
+
 def gr_text_block(
     value: str,
     x: float,
@@ -133,6 +177,7 @@ def oshw_logo_block() -> str:
 
 
 def apply_markings_text(board_text: str) -> str:
+    board_text = strip_current_jack_silkscreen_text(board_text)
     board_text = remove_blocks(board_text, "\t(gr_text", FRONT_TITLE)
     board_text = remove_blocks(board_text, "\t(gr_text", BACK_ATTRIBUTION)
     board_text = remove_blocks(board_text, "\t(gr_text", escape_gr_text(FRONT_TITLE))

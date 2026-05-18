@@ -4,6 +4,8 @@ Mounting-hole references are intentionally hidden.
 """
 import pcbnew
 
+from apply_board_markings import strip_current_jack_silkscreen_text
+
 PCB_PATH = r"c:\Users\tisha\dev\ADE9000_Breakout\ADE9000_Breakout.kicad_pcb"
 
 SILK_TEXT_SIZE_MM = 0.8
@@ -18,7 +20,7 @@ REFERENCE_PLACEMENTS = {
     "R18": (138.000, 103.000, 0),
     "R19": (138.000, 116.000, 0),
     "R20": (138.000, 129.000, 0),
-    "J1": (182.500, 104.500, 90),
+    "J1": (187.300, 104.500, 90),
     "J2": (154.000, 126.200, 0),
     "J3": (162.000, 126.200, 0),
     "J4": (170.000, 126.200, 0),
@@ -91,6 +93,10 @@ def main() -> None:
     board = pcbnew.LoadBoard(PCB_PATH)
     moved, placed = place_references(board)
     board.Save(PCB_PATH)
+    with open(PCB_PATH, encoding="utf-8") as board_file:
+        board_text = board_file.read()
+    with open(PCB_PATH, "w", encoding="utf-8", newline="") as board_file:
+        board_file.write(strip_current_jack_silkscreen_text(board_text))
     print(f"\nDone. Moved {moved} reference layer(s), placed {placed} visible reference(s). Saved to {PCB_PATH}")
 
 

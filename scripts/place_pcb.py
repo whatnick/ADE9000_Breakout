@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pcbnew
 
+from apply_board_markings import strip_current_jack_silkscreen_text
+
 
 ROOT = Path(__file__).resolve().parents[1]
 BOARD_PATH = ROOT / "ADE9000_Breakout.kicad_pcb"
@@ -389,7 +391,7 @@ def place_all(board: pcbnew.BOARD) -> None:
 
     for ref, x, y, angle in [
         ("U1", 158.500, 99.600, 0),
-        ("J1", 182.500, 104.500, 90),
+        ("J1", 187.300, 104.500, 90),
         ("J2", 155.000, 126.200, 0),
         ("J3", 162.000, 126.200, 0),
         ("J4", 169.000, 126.200, 0),
@@ -434,6 +436,7 @@ def main() -> None:
     board = pcbnew.LoadBoard(str(BOARD_PATH))
     place_all(board)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
+    BOARD_PATH.write_text(strip_current_jack_silkscreen_text(BOARD_PATH.read_text(encoding="utf-8")), encoding="utf-8", newline="")
     print(f"Placed ADE9000 ATM-style PCB: {BOARD_WIDTH:.2f} mm x {BOARD_HEIGHT:.2f} mm")
 
 

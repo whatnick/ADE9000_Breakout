@@ -26,6 +26,7 @@ The current board is an ATM90E36-style ADE9000 bench breakout, not the older tin
 - Power routing: `+3V3`, `AVDDOUT`, and `DVDDOUT` use the `Power` netclass with 0.25 mm tracks and 0.50/0.25 mm vias.
 - 3D CAD: populated parts use project-local STEP models under `models/step/`; full assembly export lives at `exports/step/ADE9000_Breakout.step`.
 - The CT jack STEP model must match the SMT `Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal` footprint; do not substitute the through-hole `SJ1-3523N` model.
+- Strip CT jack footprint outlines from F.SilkS on this board; the jacks intentionally overhang the left board edge, and separate `CTA`/`CTB`/`CTC`/`CTN` labels carry the readable silkscreen marking.
 - Voltage screw terminals use the Phoenix 1x02 P3.50 mm STEP as a 4Ucon substitute with model offset `(-1.75, -0.05, 0)`; keep pads at the continuous 3.5 mm row positions `J2=155`, `J3=162`, `J4=169`.
 
 The previous compact/JST policy remains useful historical context:
