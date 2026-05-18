@@ -657,7 +657,7 @@
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
 			(offset
-				(xyz 0 -0.6 0)
+				(xyz -1.75 -0.05 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -4805,7 +4805,7 @@
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
 			(offset
-				(xyz 0 -0.6 0)
+				(xyz -1.75 -0.05 0)
 			)
 			(scale
 				(xyz 1 1 1)
@@ -5790,13 +5790,13 @@
 		(embedded_fonts no)
 		(model "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
 			(offset
-				(xyz 0 -0.6 0)
+				(xyz -1.75 -0.05 0)
 			)
 			(scale
 				(xyz 1 1 1)
 			)
 			(rotate
-				(xyz 0 0 0)
+				(xyz -0 -0 -0)
 			)
 		)
 	)
