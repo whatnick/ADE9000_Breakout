@@ -15,6 +15,8 @@ AUDIO_LIB = KICAD_FOOTPRINTS / "Connector_Audio.pretty"
 AUDIO_NAME = "Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal"
 TERMINAL_LIB = KICAD_FOOTPRINTS / "TerminalBlock_4Ucon.pretty"
 TERMINAL_NAME = "TerminalBlock_4Ucon_1x02_P3.50mm_Horizontal"
+TERMINAL_MODEL = "${KIPRJMOD}/models/step/TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal.step"
+TERMINAL_MODEL_OFFSET = (0.0, -0.6, 0.0)
 HEADER_LIB = KICAD_FOOTPRINTS / "Connector_PinHeader_2.54mm.pretty"
 HEADER_NAME = "PinHeader_1x16_P2.54mm_Vertical"
 RESISTOR_LIB = KICAD_FOOTPRINTS / "Resistor_SMD.pretty"
@@ -271,6 +273,18 @@ def place_ref(board: pcbnew.BOARD, ref: str, x: float, y: float, angle: float = 
     field.SetTextAngleDegrees(angle)
 
 
+def set_terminal_model(fp: pcbnew.FOOTPRINT) -> None:
+    models = fp.Models()
+    if hasattr(models, "clear"):
+        models.clear()
+    model = pcbnew.FP_3DMODEL()
+    model.m_Filename = TERMINAL_MODEL
+    model.m_Offset.Set(*TERMINAL_MODEL_OFFSET)
+    model.m_Scale.Set(1.0, 1.0, 1.0)
+    model.m_Rotation.Set(0.0, 0.0, 0.0)
+    fp.Models().append(model)
+
+
 def normalize_silkscreen(board: pcbnew.BOARD) -> None:
     for fp in board.GetFootprints():
         if not hasattr(fp, "GetFields"):
@@ -313,7 +327,8 @@ def ensure_external_connectors(board: pcbnew.BOARD) -> None:
         ensure_footprint(board, ref, "CT stereo", AUDIO_LIB, AUDIO_NAME, net_map)
 
     for ref, net_map in VOLTAGE_TERMINAL_NETS.items():
-        ensure_footprint(board, ref, "Voltage", TERMINAL_LIB, TERMINAL_NAME, net_map)
+        fp = ensure_footprint(board, ref, "Voltage", TERMINAL_LIB, TERMINAL_NAME, net_map)
+        set_terminal_model(fp)
 
 
 def ensure_yhdc_burden_resistors(board: pcbnew.BOARD) -> None:
@@ -334,7 +349,7 @@ def place_all(board: pcbnew.BOARD) -> None:
     for ref, y in [("R17", 90.000), ("R18", 103.000), ("R19", 116.000), ("R20", 129.000)]:
         place(board, ref, 140.000, y, 90)
 
-    for ref, x in [("J2", 154.000), ("J3", 162.000), ("J4", 170.000)]:
+    for ref, x in [("J2", 155.000), ("J3", 162.000), ("J4", 169.000)]:
         place(board, ref, x, 131.250, 0)
 
     place(board, "J1", 185.000, 86.100, 0)
@@ -375,9 +390,9 @@ def place_all(board: pcbnew.BOARD) -> None:
     for ref, x, y, angle in [
         ("U1", 158.500, 99.600, 0),
         ("J1", 182.500, 104.500, 90),
-        ("J2", 154.000, 126.200, 0),
+        ("J2", 155.000, 126.200, 0),
         ("J3", 162.000, 126.200, 0),
-        ("J4", 170.000, 126.200, 0),
+        ("J4", 169.000, 126.200, 0),
         ("CTA1", 124.600, 88.000, 90),
         ("CTB1", 124.600, 101.000, 90),
         ("CTC1", 124.600, 114.000, 90),

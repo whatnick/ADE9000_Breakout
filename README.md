@@ -159,7 +159,7 @@ Project-local STEP models for all populated ADE9000 board parts are stored in [`
 
 The stereo CT jacks use a black AP214-colored STEP model at [`models/step/Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal.step`](models/step/Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal.step), generated from the manufacturer `SJ-3523-SMT-TR` CAD ZIP in [`models/step/SJ_3523_SMT_TR.zip`](models/step/SJ_3523_SMT_TR.zip) with [`scripts/create_sj3523_smt_step.py`](scripts/create_sj3523_smt_step.py). The script bakes the DigiKey/Same Sky CAD into the KiCad footprint frame with the front barrel on the footprint's board-edge side, without adding artificial pad overlays. Do not substitute the through-hole `SJ1-3523N` model for this SMT footprint.
 
-The voltage screw-terminal footprints use KiCad's 1x02 3.50 mm horizontal Phoenix STEP model as the closest installed mechanical equivalent for the 4Ucon footprint.
+The voltage screw-terminal footprints use KiCad's 1x02 3.50 mm horizontal Phoenix STEP model as the closest installed mechanical equivalent for the 4Ucon footprint, with a small model-only Y offset to align the substitute body to the 4Ucon footprint outline.
 
 A full board assembly STEP export is available at [`exports/step/ADE9000_Breakout.step`](exports/step/ADE9000_Breakout.step). Regenerate it with:
 
