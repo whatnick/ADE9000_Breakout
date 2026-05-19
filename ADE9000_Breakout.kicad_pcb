@@ -1328,7 +1328,7 @@
 		(descr "Resistor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor")
 		(property "Reference" "R19"
-			(at 0 -2 0)
+			(at 3.224 -0.3 90)
 			(layer "F.SilkS")
 			(uuid "6f6d0250-e987-444a-bb1c-0a1aae939a52")
 			(effects
@@ -1774,7 +1774,7 @@
 		(descr "Resistor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor")
 		(property "Reference" "R20"
-			(at 0 -2 0)
+			(at 2.889 0.081 90)
 			(layer "F.SilkS")
 			(uuid "6f6d0250-e987-444a-bb1c-0a1aae939bb1")
 			(effects
@@ -2157,7 +2157,7 @@
 		(descr "Resistor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor")
 		(property "Reference" "R17"
-			(at 0 -2 0)
+			(at 2.878 -0.3 90)
 			(layer "F.SilkS")
 			(uuid "6f6d0250-e987-444a-bb1c-0a1aae939cf5")
 			(effects
@@ -11331,7 +11331,7 @@
 		(descr "Resistor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf)")
 		(tags "resistor")
 		(property "Reference" "R18"
-			(at 0 -2 0)
+			(at 3.051 -0.173 90)
 			(layer "F.SilkS")
 			(uuid "6f6d0250-e987-444a-bb1c-0a1aae93ba08")
 			(effects
@@ -12213,7 +12213,7 @@
 		(uuid "326949c6-1bb2-4343-b737-e19d76e9e866")
 	)
 	(gr_text "CT 0.5Vpk MAX"
-		(at 144 86 0)
+		(at 133.858 83.058 0)
 		(layer "F.SilkS")
 		(uuid "a9e90002-0000-4000-8000-63746d617800")
 		(effects
@@ -12234,6 +12234,17 @@
 			)
 		)
 	)
+	(gr_text "VA"
+		(at 149.225 130.937 0)
+		(layer "F.SilkS")
+		(uuid "a9e90002-0000-4000-8000-766100000000")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.2)
+			)
+		)
+	)
 	(gr_text "ADE9000 Breakout"
 		(at 156 82.1 0)
 		(layer "F.SilkS")
@@ -12245,19 +12256,8 @@
 			)
 		)
 	)
-	(gr_text "VA"
-		(at 157 128.5 0)
-		(layer "F.SilkS")
-		(uuid "a9e90002-0000-4000-8000-766100000000")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.2)
-			)
-		)
-	)
 	(gr_text "VB"
-		(at 162 127.7 0)
+		(at 162.052 128.27 0)
 		(layer "F.SilkS")
 		(uuid "a9e90002-0000-4000-8000-766200000000")
 		(effects
@@ -12268,7 +12268,7 @@
 		)
 	)
 	(gr_text "VC"
-		(at 170 127.7 0)
+		(at 173.736 131.191 0)
 		(layer "F.SilkS")
 		(uuid "a9e90002-0000-4000-8000-766300000000")
 		(effects
