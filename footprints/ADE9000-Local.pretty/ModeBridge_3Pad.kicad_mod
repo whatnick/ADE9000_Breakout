@@ -1,0 +1,56 @@
+(footprint "ModeBridge_3Pad"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "ATM90E36-style three-pad manual solder bridge for logic mode selection")
+	(tags "solder jumper mode select")
+	(property "Reference" "JP**"
+		(at 0 -1.8 0)
+		(layer "F.SilkS")
+		(effects
+			(font (size 0.8 0.8) (thickness 0.15))
+		)
+	)
+	(property "Value" "ModeBridge_3Pad"
+		(at 0 1.8 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font (size 0.8 0.8) (thickness 0.15))
+		)
+	)
+	(attr exclude_from_pos_files exclude_from_bom allow_soldermask_bridges)
+	(fp_rect
+		(start -2.413 -1.016)
+		(end 2.413 1.016)
+		(stroke (width 0.1524) (type solid))
+		(fill none)
+		(layer "F.SilkS")
+	)
+	(fp_rect
+		(start -2.55 -1.15)
+		(end 2.55 1.15)
+		(stroke (width 0.05) (type solid))
+		(fill none)
+		(layer "F.CrtYd")
+	)
+	(pad "1" smd rect
+		(at -1.524 0)
+		(size 1.1684 1.6002)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.0508)
+	)
+	(pad "2" smd rect
+		(at 0 0)
+		(size 1.1684 1.6002)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.0508)
+	)
+	(pad "3" smd rect
+		(at 1.524 0)
+		(size 1.1684 1.6002)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.0508)
+	)
+)

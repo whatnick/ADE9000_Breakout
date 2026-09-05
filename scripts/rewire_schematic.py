@@ -20,6 +20,7 @@ KI_IFACE = r"c:\Users\tisha\dev\KiCAD-MCP-Server\python\kicad_interface.py"
 KI_PYTHON = r"C:\Program Files\KiCad\10.0\bin\python.exe"
 RESISTOR_FOOTPRINT = "Resistor_SMD:R_0603_1608Metric"
 CAPACITOR_0603_FOOTPRINT = "Capacitor_SMD:C_0603_1608Metric"
+MODE_JUMPER_FOOTPRINT = "ADE9000-Local:ModeBridge_3Pad"
 CAPACITOR_0603_REFS = {"C2", "C4", "C6", "C8", "C9", "C10", "C11"} | {f"C{index}" for index in range(12, 26)}
 IO_STUB = 2.54
 PASSIVE_STUB = 1.27
@@ -118,6 +119,8 @@ COMPONENT_POSES = {
     "C10": (180.0, 98.0, 0.0),
     "R16": (180.0, 128.0, 0.0),
     "D1": (180.0, 136.0, 0.0),
+    "JP1": (175.0, 55.0, 0.0),
+    "JP2": (175.0, 65.0, 0.0),
     "C3": (166.0, 145.0, 0.0),
     "C4": (172.0, 145.0, 0.0),
     "C1": (166.0, 158.0, 0.0),
@@ -298,6 +301,11 @@ def normalize_debug_symbols(data: list) -> None:
     for high_ref, low_ref, *_rest in VOLTAGE_DIVIDER_ROWS:
         ensure_resistor_symbol(data, symbols, high_ref, "100k")
         ensure_resistor_symbol(data, symbols, low_ref, "2.49k")
+    for ref, value in (("JP1", "PM0 mode"), ("JP2", "PM1 mode")):
+        jumper = next((symbol for symbol in symbols if component_ref(symbol) == ref), None)
+        if jumper is not None:
+            set_property(jumper, "Value", value)
+            set_property(jumper, "Footprint", MODE_JUMPER_FOOTPRINT)
 
 
 def set_at(block: list, x: float, y: float, angle: float | None = None) -> None:
@@ -588,6 +596,12 @@ no_connect_count = content.count("(no_connect ")
 for keyword in ("wire", "label", "junction", "no_connect"):
     content = remove_sexp_blocks(content, keyword)
 schematic.write_text(content, encoding="utf-8")
+for ref, value in (("JP1", "PM0 mode"), ("JP2", "PM1 mode")):
+    if f'(property "Reference" "{ref}"' not in content:
+        x, y, _angle = COMPONENT_POSES[ref]
+        result = add_component("Jumper", "SolderJumper_3_Open", ref, value, x, y)
+        if not result.get("success"):
+            raise RuntimeError(f"Could not add {ref}: {result.get('message', 'unknown error')}")
 print(
     f"  Cleared {wire_count} wires, {label_count} labels, {junction_count} junctions, "
     f"{no_connect_count} no-connects"
@@ -664,8 +678,8 @@ for net, pin_y in [
     ("IAN", 111.43),
     ("IAP", 113.97),
     ("RESET", 116.51),
-    ("GND", 119.05),
-    ("GND", 121.59),
+    ("PM1", 119.05),
+    ("PM0", 121.59),
     ("DVDDOUT", 124.13),
     ("GND", 126.67),
     ("+3V3", 129.21),
@@ -721,6 +735,23 @@ for ref, nets in VOLTAGE_TERMINAL_NETS.items():
 
 for flag_ref, flag_net in [("#FLG3", "SS"), ("#FLG4", "MOSI"), ("#FLG5", "SCLK")]:
     errors += report_single(f"{flag_ref} {flag_net}", connect_pin(flag_ref, "1", flag_net))
+
+print()
+print("--- Manual Power-Mode Bridge Jumpers ---")
+for ref, mode_net in (("JP1", "PM0"), ("JP2", "PM1")):
+    jumper_x, jumper_y, _angle = COMPONENT_POSES[ref]
+    errors += report_pair(
+        f"{ref} pin 1 high",
+        *connect_with_stub("+3V3", jumper_x - 5.08, jumper_y, jumper_x - 7.62, jumper_y, 180),
+    )
+    errors += report_pair(
+        f"{ref} pin 2 {mode_net}",
+        *connect_with_stub(mode_net, jumper_x, jumper_y + 3.81, jumper_x, jumper_y + 6.35, 0),
+    )
+    errors += report_pair(
+        f"{ref} pin 3 low",
+        *connect_with_stub("GND", jumper_x + 5.08, jumper_y, jumper_x + 7.62, jumper_y, 0),
+    )
 
 print()
 print("--- YHDC CT Burden/Multiplier Resistors ---")

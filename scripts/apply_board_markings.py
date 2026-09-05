@@ -31,7 +31,7 @@ SIGNAL_TEXTS = [
     ("DRDY", 180.700, 114.040, 0, "F.SilkS", 0.8, 0.2, "pin12"),
     ("RST", 180.700, 116.580, 0, "F.SilkS", 0.8, 0.2, "pin13"),
     ("CLKI", 180.700, 119.120, 0, "F.SilkS", 0.8, 0.2, "pin14"),
-    ("CLKO", 180.700, 121.660, 0, "F.SilkS", 0.8, 0.2, "pin15"),
+    ("CLKO", 182.000, 121.660, 0, "F.SilkS", 0.8, 0.2, "pin15"),
     ("GND", 180.700, 124.200, 0, "F.SilkS", 0.8, 0.2, "pin16"),
     ("CTA", 130.700, 88.000, 90, "F.SilkS", 0.8, 0.2, "cta"),
     ("CTB", 130.700, 101.000, 90, "F.SilkS", 0.8, 0.2, "ctb"),
@@ -43,8 +43,10 @@ SIGNAL_TEXTS = [
     ("VIN 12VAC MAX", 145.500, 133.400, 0, "F.SilkS", 0.8, 0.2, "vinmax"),
     ("CT 0.5Vpk MAX", 144.000, 86.000, 0, "F.SilkS", 0.8, 0.2, "ctmax"),
     ("DIGITAL", 175.000, 82.600, 0, "F.SilkS", 0.8, 0.2, "digital"),
+    ("1 PM0 0", 176.800, 123.800, 0, "F.SilkS", 0.8, 0.15, "pm0"),
+    ("1 PM1 0", 176.800, 128.800, 0, "F.SilkS", 0.8, 0.15, "pm1"),
 ]
-LEGACY_SIGNAL_TEXTS = ["DREADY", "SPI", "RESET", "CLKIN", "CLKOUT", "CF3/ZX"]
+LEGACY_SIGNAL_TEXTS = ["DREADY", "SPI", "RESET", "CLKIN", "CLKOUT", "CF3/ZX", "BRIDGE ONE SIDE"]
 
 
 def escape_gr_text(value: str) -> str:

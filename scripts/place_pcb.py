@@ -26,6 +26,8 @@ RESISTOR_LIB = KICAD_FOOTPRINTS / "Resistor_SMD.pretty"
 RESISTOR_NAME = "R_0603_1608Metric"
 CAPACITOR_LIB = KICAD_FOOTPRINTS / "Capacitor_SMD.pretty"
 CAPACITOR_0603_NAME = "C_0603_1608Metric"
+JUMPER_LIB = ROOT / "footprints" / "ADE9000-Local.pretty"
+JUMPER_NAME = "ModeBridge_3Pad"
 CAPACITOR_0603_REFS = {"C2", "C4", "C6", "C8", "C9", "C10", "C11"} | {f"C{index}" for index in range(12, 26)}
 FOOTPRINT_PLUGIN = pcbnew.PCB_IO_MGR.FindPlugin(pcbnew.PCB_IO_MGR.KICAD_SEXP)
 FOOTPRINT_PROTOTYPES: dict[tuple[str, str], pcbnew.FOOTPRINT] = {}
@@ -89,12 +91,21 @@ VOLTAGE_DIVIDER_ROWS = [
     ("R26", "R32", "R14", "C24", "VCN_J", "VCN_DIV", "VCN"),
 ]
 
+VOLTAGE_PLACEMENT_ROWS = [
+    ("R25", "R31", "R15", "C25"),
+    ("R26", "R32", "R14", "C24"),
+    ("R23", "R29", "R13", "C23"),
+    ("R24", "R30", "R12", "C22"),
+    ("R21", "R27", "R11", "C21"),
+    ("R22", "R28", "R10", "C20"),
+]
+
 U1_NETS = {
     "1": "+3V3",
     "2": "GND",
     "3": "DVDDOUT",
-    "4": "GND",
-    "5": "GND",
+    "4": "PM0",
+    "5": "PM1",
     "6": "RESET",
     "7": "IAP",
     "8": "IAN",
@@ -172,6 +183,7 @@ for preload_lib, preload_name in [
     (HEADER_LIB, HEADER_NAME),
     (RESISTOR_LIB, RESISTOR_NAME),
     (CAPACITOR_LIB, CAPACITOR_0603_NAME),
+    (JUMPER_LIB, JUMPER_NAME),
 ]:
     load_footprint(preload_lib, preload_name)
 
@@ -361,15 +373,15 @@ def normalize_silkscreen(board: pcbnew.BOARD) -> None:
 
 
 def add_u1_if_missing(board: pcbnew.BOARD) -> None:
-    if footprint_by_ref(board, "U1") is not None:
-        return
-
-    fp = load_footprint(QFN_LIB, QFN_NAME)
+    fp = footprint_by_ref(board, "U1")
     if fp is None:
-        raise RuntimeError(f"Could not load {QFN_LIB / (QFN_NAME + '.kicad_mod')}")
+        fp = load_footprint(QFN_LIB, QFN_NAME)
+        if fp is None:
+            raise RuntimeError(f"Could not load {QFN_LIB / (QFN_NAME + '.kicad_mod')}")
+        fp.SetReference("U1")
+        fp.SetValue("ADE9000")
+        board.Add(fp)
 
-    fp.SetReference("U1")
-    fp.SetValue("ADE9000")
     for pad in fp.Pads():
         if pad.GetNumber() == "41":
             pad.SetNumber("EP")
@@ -377,7 +389,6 @@ def add_u1_if_missing(board: pcbnew.BOARD) -> None:
         net_name = U1_NETS.get(pad.GetNumber())
         if net_name:
             set_net(board, pad, net_name)
-    board.Add(fp)
 
 
 def ensure_external_connectors(board: pcbnew.BOARD) -> None:
@@ -416,6 +427,18 @@ def ensure_voltage_divider_resistors(board: pcbnew.BOARD) -> None:
                     set_net(board, pad, net_name)
 
 
+def ensure_mode_jumpers(board: pcbnew.BOARD) -> None:
+    for ref, value, mode_net in (("JP1", "PM0 mode", "PM0"), ("JP2", "PM1 mode", "PM1")):
+        ensure_footprint(
+            board,
+            ref,
+            value,
+            JUMPER_LIB,
+            JUMPER_NAME,
+            {"1": "+3V3", "2": mode_net, "3": "GND"},
+        )
+
+
 def place_all(board: pcbnew.BOARD) -> None:
     for footprint in board.Footprints():
         refresh_footprint_uuids(footprint)
@@ -424,6 +447,7 @@ def place_all(board: pcbnew.BOARD) -> None:
     ensure_external_connectors(board)
     ensure_yhdc_burden_resistors(board)
     ensure_voltage_divider_resistors(board)
+    ensure_mode_jumpers(board)
     ensure_hand_assembly_passives(board)
 
     place(board, "U1", 158.500, 104.000, 0)
@@ -438,6 +462,8 @@ def place_all(board: pcbnew.BOARD) -> None:
         place(board, ref, x, 131.250, 0)
 
     place(board, "J1", 184.873, 86.100, -90)
+    place(board, "JP1", 176.800, 122.000, 0)
+    place(board, "JP2", 176.800, 127.000, 0)
 
     current_rows = ["IAP", "IAN", "IBP", "IBN", "ICP", "ICN", "INP", "INN"]
     for index, _name in enumerate(current_rows):
@@ -445,13 +471,12 @@ def place_all(board: pcbnew.BOARD) -> None:
         place(board, f"R{2 + index}", 143.500, y, 0)
         place(board, f"C{12 + index}", 147.000, y, 90)
 
-    voltage_refs = [(10, 20), (11, 21), (12, 22), (13, 23), (14, 24), (15, 25)]
-    for index, (resistor, cap) in enumerate(voltage_refs):
+    for index, (high_ref, low_ref, filter_ref, cap_ref) in enumerate(VOLTAGE_PLACEMENT_ROWS):
         y = 116.000 + index * 2.200
-        place(board, f"R{21 + index}", 149.700, y, 0)
-        place(board, f"R{27 + index}", 153.500, y, 0)
-        place(board, f"R{resistor}", 160.000, y, 0)
-        place(board, f"C{cap}", 164.000, y, 0)
+        place(board, high_ref, 149.700, y, 0)
+        place(board, low_ref, 153.500, y, 0)
+        place(board, filter_ref, 160.000, y, 0)
+        place(board, cap_ref, 164.000, y, 0)
 
     for ref, x, y, angle in [
         ("C1", 166.500, 99.500, 90),
@@ -459,7 +484,7 @@ def place_all(board: pcbnew.BOARD) -> None:
         ("C3", 160.600, 112.000, 90),
         ("C4", 162.500, 112.000, 90),
         ("C5", 154.600, 95.700, 0),
-        ("C6", 153.400, 102.750, 0),
+        ("C6", 153.400, 100.500, 90),
         ("C7", 164.500, 112.000, 90),
         ("C8", 166.400, 112.000, 90),
         ("R1", 155.000, 111.500, 0),
@@ -498,11 +523,13 @@ def place_all(board: pcbnew.BOARD) -> None:
         ("C3", 160.600, 114.400, 0),
         ("C4", 162.500, 114.500, 0),
         ("C5", 155.800, 94.000, 0),
-        ("C6", 151.800, 100.800, 0),
+        ("C6", 151.700, 99.300, 0),
         ("C7", 164.500, 114.400, 0),
         ("C8", 166.400, 114.500, 0),
         ("C9", 170.000, 98.700, 0),
         ("C10", 170.000, 109.300, 0),
+        ("JP1", 176.800, 120.200, 0),
+        ("JP2", 176.800, 125.200, 0),
     ]:
         place_ref(board, ref, x, y, angle)
 
@@ -511,12 +538,12 @@ def place_all(board: pcbnew.BOARD) -> None:
         place_ref(board, f"R{2 + index}", 141.300, y, 0)
         place_ref(board, f"C{12 + index}", 149.300, y, 0)
 
-    for index in range(6):
+    for index, (high_ref, low_ref, filter_ref, cap_ref) in enumerate(VOLTAGE_PLACEMENT_ROWS):
         y = 116.000 + index * 2.200
-        place_ref(board, f"R{21 + index}", 144.200, y - 1.050, 0)
-        place_ref(board, f"R{27 + index}", 151.100, y + 1.050, 0)
-        place_ref(board, f"R{10 + index}", 156.300, y, 0)
-        place_ref(board, f"C{20 + index}", 167.400, y, 0)
+        place_ref(board, high_ref, 144.200, y - 1.050, 0)
+        place_ref(board, low_ref, 151.100, y + 1.050, 0)
+        place_ref(board, filter_ref, 156.300, y, 0)
+        place_ref(board, cap_ref, 167.400, y, 0)
 
 
 def main() -> None:

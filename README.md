@@ -4,6 +4,15 @@ Breadboard-compatible breakout for the Analog Devices [ADE9000](https://www.anal
 
 The board follows the **test circuit from Figure 55 of the ADE9000 datasheet** (Rev. B, p. 28): all onboard passives (decoupling, RC anti-aliasing filters, crystal load caps, reset RC) are populated, power plus the analog channels are broken out to 0.1" headers, and the remaining digital signals are exposed on test pads to keep the board compact.
 
+## 3D renders
+
+These views are rendered from the populated KiCad assembly using the
+project-local STEP models.
+
+| Top isometric | Bottom isometric |
+|---------------|------------------|
+| ![ADE9000 breakout top isometric render](docs/images/ADE9000_Breakout_isometric_top.png) | ![ADE9000 breakout bottom isometric render](docs/images/ADE9000_Breakout_isometric_bottom.png) |
+
 ---
 
 ## Features
@@ -17,7 +26,7 @@ The board follows the **test circuit from Figure 55 of the ADE9000 datasheet** (
 - **CF2 activity LED** with 1 kΩ current-limit resistor
 - **Power plus analog inputs** broken out to 0.1" headers
 - **SPI, CF, IRQ, CLK, and RESET** exposed on test pads
-- PM0/PM1 grounded for normal operating mode
+- ATM90E36-style three-pad solder bridges for manual PM0/PM1 mode selection
 
 ---
 
@@ -85,6 +94,22 @@ The board follows the **test circuit from Figure 55 of the ADE9000 datasheet** (
   - **AVDDOUT** (pin 25): 4.7 µF + 0.1 µF ceramic to GND — **do not drive externally**
   - **DVDDOUT** (pin 3): 4.7 µF + 0.1 µF ceramic to GND — **do not drive externally**
   - **REF** (pin 16): 4.7 µF + 0.1 µF ceramic to REFGND (internal 1.25 V reference)
+
+### PM0/PM1 mode bridges
+
+`JP1` controls PM0 and `JP2` controls PM1. Each open three-pad jumper is marked
+`1 PMx 0`: bridge the center pad to `1` for `+3V3`, or to `0` for `GND`.
+
+| JP2 / PM1 | JP1 / PM0 | Selection |
+|------------|-----------|-----------|
+| 0 | 0 | Normal operation |
+| 0 | 1 | PM1:PM0 = `01` |
+| 1 | 0 | PM1:PM0 = `10` |
+| 1 | 1 | PM1:PM0 = `11` |
+
+Bridge exactly one side of each jumper before powering the board. Never bridge
+both sides, and do not leave a mode pin floating. Production boards intended
+for normal operation should have the `0` side bridged on both JP1 and JP2.
 
 ---
 

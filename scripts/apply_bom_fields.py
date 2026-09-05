@@ -72,11 +72,11 @@ for ref in ("CTA1", "CTB1", "CTC1", "CTN1"):
 
 for ref in ("C2", "C4", "C6", "C8"):
     BOM_FIELDS[ref] = {
-        "Manufacturer": "Murata",
-        "MPN": "GRM188R71A104KA61D",
-        "Description": "100 nF 10 V X7R 0603 ceramic capacitor",
-        "DigiKey": "https://www.digikey.com/en/products/result?keywords=GRM188R71A104KA61D",
-        "Mouser": "https://www.mouser.com/c/?q=GRM188R71A104KA61D",
+        "Manufacturer": "YAGEO",
+        "MPN": "CC0603KPX7R0BB104",
+        "Description": "100 nF 100 V 10% X7R 0603 ceramic capacitor",
+        "DigiKey": "https://www.digikey.com.au/en/products/detail/yageo/CC0603KPX7R0BB104/29291093",
+        "Mouser": "https://www.mouser.com/c/?q=CC0603KPX7R0BB104",
     }
 
 for ref in ("C9", "C10"):

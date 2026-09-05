@@ -72,9 +72,13 @@ def load_rows(schematic: Path) -> list[dict[str, str]]:
     for block in iter_symbol_blocks(text):
         if "(instances " not in block:
             continue
+        if "(in_bom no)" in block:
+            continue
         props = properties(block)
         ref = props.get("Reference", "")
         if not ref or ref.startswith("#"):
+            continue
+        if props.get("Footprint", "") in {"ADE9000-Local:ModeBridge_3Pad"}:
             continue
         if props.get("Exclude from BOM", "").lower() in {"yes", "true", "1"}:
             continue

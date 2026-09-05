@@ -1,6 +1,6 @@
 Line,Quantity,References,Value,Footprint,Manufacturer,MPN,DigiKey,Mouser,Description
 1,1,C1,10uF,Capacitor_SMD:C_0805_2012Metric,Samsung Electro-Mechanics,CL21A106KPFNNNE,https://www.digikey.com/en/products/result?keywords=CL21A106KPFNNNE,https://www.mouser.com/c/?q=CL21A106KPFNNNE,10 uF 10 V X5R 0805 ceramic capacitor
-2,4,"C2, C4, C6, C8",100nF,Capacitor_SMD:C_0603_1608Metric,Murata,GRM188R71A104KA61D,https://www.digikey.com/en/products/result?keywords=GRM188R71A104KA61D,https://www.mouser.com/c/?q=GRM188R71A104KA61D,100 nF 10 V X7R 0603 ceramic capacitor
+2,4,"C2, C4, C6, C8",100nF,Capacitor_SMD:C_0603_1608Metric,YAGEO,CC0603KPX7R0BB104,https://www.digikey.com.au/en/products/detail/yageo/CC0603KPX7R0BB104/29291093,https://www.mouser.com/c/?q=CC0603KPX7R0BB104,100 nF 100 V 10% X7R 0603 ceramic capacitor
 3,3,"C3, C5, C7",4.7uF,Capacitor_SMD:C_0805_2012Metric,Samsung Electro-Mechanics,CL21A475KPFNNNE,https://www.digikey.com/en/products/result?keywords=CL21A475KPFNNNE,https://www.mouser.com/c/?q=CL21A475KPFNNNE,4.7 uF 10 V X5R 0805 ceramic capacitor
 4,2,"C9, C10",16pF,Capacitor_SMD:C_0603_1608Metric,Murata,GRM1885C1H160JA01D,https://www.digikey.com/en/products/result?keywords=GRM1885C1H160JA01D,https://www.mouser.com/c/?q=GRM1885C1H160JA01D,16 pF 50 V C0G/NP0 0603 ceramic capacitor
 5,1,C11,1uF,Capacitor_SMD:C_0603_1608Metric,Murata,GRM188R61A105KA61D,https://www.digikey.com/en/products/result?keywords=GRM188R61A105KA61D,https://www.mouser.com/c/?q=GRM188R61A105KA61D,1 uF 10 V X5R 0603 ceramic capacitor
